@@ -15,7 +15,7 @@
 body {
     margin: 0;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #ffffff;
+    background: #f7f1ee;
     color: var(--text-dark);
     line-height: 1.6;
 }
@@ -57,6 +57,8 @@ a {
 }
 
 .primary-nav a {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 500;
     text-transform: uppercase;
     font-size: 0.95rem;
     letter-spacing: 0.08em;
@@ -97,13 +99,20 @@ main {
 
 .site-footer {
     text-align: center;
-    padding: 2rem 1rem 3rem;
-    background: #f9f9f9;
-    color: var(--text-gray);
+    padding: 3rem 1rem 3rem;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    background: #4c2a4f;
+    color: #ffffff;
+    margin-top: 2rem;
 }
 
 .site-footer a {
-    color: var(--text-gray);
+    color: #ffffff;
+}
+.site-footer p {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    color: #ffffff;
+    margin: 0;
 }
 
 /* Home Section Styles */
