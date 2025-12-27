@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Megan &amp; Stephen | June 13, 2025</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="{% static 'celebration/css/styles.css' %}" />
+        <script defer src="{% static 'celebration/js/script.js' %}"></script>
+    </head>
+    <body>
+        <header class="site-header">
+            <div class="brand-mark">
+                <img src="{% static 'celebration/images/monogram.svg' %}" alt="Megan &amp; Stephen" />
+            </div>
+            <nav class="primary-nav">
+                <a href="{% url 'home' %}">Home</a>
+                <a href="{% url 'details' %}">Details</a>
+                <a href="{% url 'travel' %}">Travel</a>
+                <a href="{% url 'registry' %}">Registry</a>
+                <a href="{% url 'livestream' %}">Livestream</a>
+            </nav>
+        </header>
+
+        {% if messages %}
+            <section class="flash-messages">
+                {% for message in messages %}
+                    <div class="flash flash-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="site-footer">
+            <p>Designed and built by Megan and Stephen — collaborators in code, partners in life.</p>
+            {# Photo portal link hidden for now #}
+            {# <p><a href="{% url 'photo-upload' %}">Send us your photos</a></p> #}
+        </footer>
+        {% block page_scripts %}{% endblock %}
+    </body>
+</html>

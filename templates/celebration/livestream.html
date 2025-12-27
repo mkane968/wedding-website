@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="livestream-hero">
+    <header>
+        <p class="eyebrow">Livestream Lounge</p>
+        <h1>Celebrate from Wherever You Are</h1>
+        <p>
+            We'll email the final link a week before the wedding. Save this page to join the moment the prelude begins.
+        </p>
+    </header>
+
+    <div class="livestream-embed">
+        {{ embed_code|safe }}
+    </div>
+
+    <div class="livestream-tips">
+        <article>
+            <h3>How it works</h3>
+            <p>
+                We'll embed the real-time video here via Subsplash. Simply refresh the page on wedding day and tap play.
+            </p>
+        </article>
+        <article>
+            <h3>Test your setup</h3>
+            <p>
+                Check speakers, AirPlay, or Chromecast ahead of time. We'll open the livestream 15 minutes before the
+                processional.
+            </p>
+        </article>
+        <article>
+            <h3>Send a toast</h3>
+            <p>
+                Drop photos and wishes through the QR/NFC photo portal so we can celebrate your virtual cheers in person.
+            </p>
+        </article>
+    </div>
+</section>
+{% endblock %}

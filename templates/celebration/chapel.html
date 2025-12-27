@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="chapel-hero">
+    <header>
+        <p class="eyebrow">Virtual Chapel</p>
+        <h1>Take Your Seat</h1>
+        <p>{{ attendee_count }} loved ones are already in the pews.</p>
+    </header>
+    <p class="subtle">
+        Explore the interactive chapel below. Each floating figure represents a confirmed RSVP, seated in pews that mirror
+        the Proclamation Presbyterian Church chapel layout. Pan or scroll to look around.
+    </p>
+</section>
+
+<section class="chapel-seating">
+    <header>
+        <p class="eyebrow">Seating Chart</p>
+        <h2>Pews fill up as each RSVP arrives</h2>
+    </header>
+    <div class="chapel-three-wrapper" data-chapel-scene>
+        <noscript>Your browser needs JavaScript enabled to view the interactive chapel.</noscript>
+    </div>
+    <p class="subtle">Names also appear below for quick reference.</p>
+    <ul class="chapel-seat-list">
+        {% for seat in seating %}
+            <li>Row {{ seat.row }} Seat {{ seat.seat_number }} — {{ seat.name }}</li>
+        {% empty %}
+            <li>Your reserved seat will appear as soon as you RSVP “yes”.</li>
+        {% endfor %}
+    </ul>
+</section>
+
+{{ seating|json_script:"chapel-seating-data" }}
+{% endblock %}
+
+{% block page_scripts %}
+    {{ block.super }}
+    <script defer src="{% static 'celebration/js/chapel.js' %}?v={{ timestamp|default:0 }}"></script>
+{% endblock %}

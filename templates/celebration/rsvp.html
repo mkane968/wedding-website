@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="rsvp-page">
+    <div style="text-align: center; padding: 4rem 2rem; max-width: 900px; margin: 0 auto;">
+        <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 3rem; font-weight: 400; margin: 0 0 2rem 0; color: #2b2b2b; letter-spacing: 0.02em;">RSVP</h1>
+        
+        <form method="post" novalidate style="display: grid; gap: 2rem;">
+            {% csrf_token %}
+            
+            <div style="display: grid; gap: 1.5rem;">
+                <div>
+                    {{ rsvp_form.full_name.label_tag }}
+                    {{ rsvp_form.full_name }}
+                    {{ rsvp_form.full_name.errors }}
+                </div>
+                
+                <div>
+                    {{ rsvp_form.attendance_choice.label_tag }}
+                    <div style="display: flex; gap: 2rem; justify-content: center; margin-top: 0.5rem;">
+                        {% for choice in rsvp_form.attendance_choice %}
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                {{ choice.tag }}
+                                <label for="{{ choice.id_for_label }}" style="margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; cursor: pointer;">{{ choice.choice_label }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {{ rsvp_form.attendance_choice.errors }}
+                </div>
+                
+                <div>
+                    {{ rsvp_form.party_size.label_tag }}
+                    {{ rsvp_form.party_size }}
+                    {{ rsvp_form.party_size.errors }}
+                    {% if rsvp_form.party_size.help_text %}
+                        <p style="font-size: 0.9rem; color: #6b6b6b; margin: 0.5rem 0 0 0;">{{ rsvp_form.party_size.help_text }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div style="text-align: center; padding-top: 2rem;">
+                <button type="submit" style="padding: 1rem 3rem; background: #4c2a4f; color: white; border: none; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; cursor: pointer;">Continue to Avatar Customization</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<style>
+.rsvp-page label {
+    display: block;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.1rem;
+    color: #2b2b2b;
+    margin-bottom: 0.5rem;
+}
+
+.rsvp-page input[type="text"],
+.rsvp-page input[type="email"],
+.rsvp-page input[type="number"],
+.rsvp-page select,
+.rsvp-page textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 1rem;
+    background: white;
+}
+
+.rsvp-page input[type="radio"] {
+    width: auto;
+    margin-right: 0.5rem;
+}
+
+.rsvp-page textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.rsvp-page .errorlist {
+    color: #d32f2f;
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+    font-size: 0.9rem;
+}
+</style>
+{% endblock %}
+
+

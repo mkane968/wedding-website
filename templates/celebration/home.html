@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div style="text-align: center; padding: 4rem 2rem 0 2rem;">
+    <img src="{% static 'rose-border-2.png' %}" alt="Floral border" style="max-width: 800px; width: 100%; height: auto; display: block; margin: 0 auto 1rem;" />
+    <p style="font-family: 'Cormorant'; font-size: 1.3rem; color: #6b6b6b; margin: 0 0 1rem 0; font-weight: 300; letter-spacing: 0.05em;">Saturday, June 13, 2026</p>
+    <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 4rem; font-weight: 400; margin: 0; color: #2b2b2b; letter-spacing: 0.02em;">Megan &amp; Stephen</h1>
+    <div style="display: inline-block; padding: 1rem 2rem; background: transparent; color: #9b9b9b; border: 2px solid #d0d0d0; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; margin-bottom: 2rem; cursor: not-allowed; opacity: 0.7;">Welcoming RSVPs Soon</div>
+    <img src="{% static 'couple-image.png' %}" alt="Megan and Stephen" style="max-width: 400px; width: 100%; height: auto; display: block; margin: 0 auto 1rem;" />
+    <p style="font-style: italic; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.4rem; color: #6b6b6b; margin: 0 0 2rem 0;">Please join us as we celebrate...</p>
+    <div style="text-align: center;">
+        <div style="display: flex; flex-direction: row; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem;">
+            <div style="background: #4c2a4f; padding: 1.5rem 2rem; border-radius: 8px; min-width: 350px; display: inline-block;">
+                <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; font-weight: bold; color: #ffffff; margin: 0 0 0.75rem 0;">2 p.m. | Ceremony</p>
+                <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; color: #f5f5f5; margin: 0 0 0.25rem 0;">Proclamation Presbyterian Church</p>
+                <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #e0e0e0; margin: 0;">278 S Bryn Mawr Ave</p>
+                <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #e0e0e0; margin: 0 0 0.25rem 0;">Bryn Mawr, PA</p>
+            </div>
+            <div style="background: #4c2a4f; padding: 1.5rem 2rem; border-radius: 8px; min-width: 350px; display: inline-block;">
+                <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; font-weight: bold; color: #ffffff; margin: 0 0 0.75rem 0;">5 p.m. | Cocktails & Reception</p>
+                <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; color: #f5f5f5; margin: 0 0 0.25rem 0;">Kings Mills</p>
+                <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #e0e0e0; margin: 0;">6000 Pennell Rd</p>
+                <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #e0e0e0; margin: 0 0 0.25rem 0;">Media, PA</p>
+            </div>
+        </div>
+        <img src="{% static 'rose-border-2.png' %}" alt="Floral border" style="max-width: 800px; width: 100%; height: auto; display: block; margin: 2rem auto 0;" />
+    </div>
+</div>
+{% endblock %}

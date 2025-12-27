@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="gallery-page">
+    <header>
+        <p class="eyebrow">Shared Memories</p>
+        <h1>Guest Gallery</h1>
+        <p>Approved uploads appear here. Keep them coming!</p>
+    </header>
+    <div class="photo-gallery">
+        {% for photo in photos %}
+            <figure>
+                <img src="{{ photo.image.url }}" alt="{{ photo.display_name }}" />
+                <figcaption>{{ photo.display_name }}{% if photo.caption %} · {{ photo.caption }}{% endif %}</figcaption>
+            </figure>
+        {% empty %}
+            <p>No photos yet, but the film is loading &mdash; check back soon.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

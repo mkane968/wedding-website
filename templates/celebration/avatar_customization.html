@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="avatar-customization-page">
+    <div style="text-align: center; padding: 4rem 2rem; max-width: 1200px; margin: 0 auto;">
+        <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 3rem; font-weight: 400; margin: 0 0 1rem 0; color: #2b2b2b; letter-spacing: 0.02em;">Create Your Avatars</h1>
+        <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; color: #6b6b6b; margin: 0 0 3rem 0;">Customize {{ party_size }} avatar{{ party_size|pluralize }} for your party</p>
+        
+        <form method="post" novalidate style="display: grid; gap: 3rem;">
+            {% csrf_token %}
+            
+            {% for config in avatar_configs %}
+                {% with avatar_index=forloop.counter0 %}
+                <div class="avatar-builder" data-avatar-index="{{ avatar_index }}" style="border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem; background: #fafafa;">
+                    <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 2rem; font-weight: 400; margin: 0 0 2rem 0; color: #2b2b2b; text-align: center;">Person {{ forloop.counter }}</h2>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
+                        <div style="display: grid; gap: 1.5rem;">
+                            <!-- Hidden fields for form submission -->
+                            <input type="hidden" name="avatar_{{ avatar_index }}_skin_tone" id="id_avatar_{{ avatar_index }}_skin_tone" value="{{ config.skin|default:'porcelain' }}">
+                            <input type="hidden" name="avatar_{{ avatar_index }}_hair_color" id="id_avatar_{{ avatar_index }}_hair_color" value="{{ config.hair|default:'espresso' }}">
+                            <input type="hidden" name="avatar_{{ avatar_index }}_hair_style" id="id_avatar_{{ avatar_index }}_hair_style" value="{{ config.hairStyle|default:'short' }}">
+                            <input type="hidden" name="avatar_{{ avatar_index }}_outfit_color" id="id_avatar_{{ avatar_index }}_outfit_color" value="{{ config.outfit|default:'lavender' }}">
+                            <input type="hidden" name="avatar_{{ avatar_index }}_accent" id="id_avatar_{{ avatar_index }}_accent" value="{{ config.accent|default:'floral' }}">
+                            <input type="hidden" name="avatar_{{ avatar_index }}_signature" id="id_avatar_{{ avatar_index }}_signature" value="{{ config.signature|default:rsvp.guest.full_name }}-{{ forloop.counter }}">
+                            
+                            <!-- Skin Tone Swatches -->
+                            <div>
+                                <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.75rem;">Skin Tone</label>
+                                <div class="color-swatch-group" data-field="avatar_{{ avatar_index }}_skin_tone">
+                                    <button type="button" class="color-swatch" data-value="porcelain" data-color="#eeb4a4" style="background: #eeb4a4;" title="Porcelain"></button>
+                                    <button type="button" class="color-swatch" data-value="rosy" data-color="#e7a391" style="background: #e7a391;" title="Rosy"></button>
+                                    <button type="button" class="color-swatch" data-value="sienna" data-color="#d78774" style="background: #d78774;" title="Sienna"></button>
+                                    <button type="button" class="color-swatch" data-value="amber" data-color="#b16a5b" style="background: #b16a5b;" title="Amber"></button>
+                                    <button type="button" class="color-swatch" data-value="espresso" data-color="#92594b" style="background: #92594b;" title="Espresso"></button>
+                                </div>
+                            </div>
+                            
+                            <!-- Hair Color Swatches -->
+                            <div>
+                                <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.75rem;">Hair Color</label>
+                                <div class="color-swatch-group" data-field="avatar_{{ avatar_index }}_hair_color">
+                                    <button type="button" class="color-swatch" data-value="midnight" data-color="#362c47" style="background: #362c47;" title="Midnight"></button>
+                                    <button type="button" class="color-swatch" data-value="espresso" data-color="#3b2315" style="background: #3b2315;" title="Espresso"></button>
+                                    <button type="button" class="color-swatch" data-value="chestnut" data-color="#6c4545" style="background: #6c4545;" title="Chestnut"></button>
+                                    <button type="button" class="color-swatch" data-value="copper" data-color="#b45b3e" style="background: #b45b3e;" title="Copper"></button>
+                                    <button type="button" class="color-swatch" data-value="honey" data-color="#f29c65" style="background: #f29c65;" title="Honey Blonde"></button>
+                                    <button type="button" class="color-swatch" data-value="platinum" data-color="#dee1f5" style="background: #dee1f5; border: 1px solid #ccc;" title="Platinum"></button>
+                                    <button type="button" class="color-swatch" data-value="rose-quartz" data-color="#e16381" style="background: #e16381;" title="Rose Quartz"></button>
+                                </div>
+                            </div>
+                            
+                            <!-- Hair Style Buttons -->
+                            <div>
+                                <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.75rem;">Hair Style</label>
+                                <div class="option-button-group" data-field="avatar_{{ avatar_index }}_hair_style">
+                                    <button type="button" class="option-button" data-value="short">Short sleek</button>
+                                    <button type="button" class="option-button" data-value="long">Long flowing waves</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Outfit Color Swatches -->
+                            <div>
+                                <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.75rem;">Outfit Color</label>
+                                <div class="color-swatch-group" data-field="avatar_{{ avatar_index }}_outfit_color">
+                                    <button type="button" class="color-swatch" data-value="champagne" data-color="#f7e8d8" style="background: #f7e8d8; border: 1px solid #ccc;" title="Champagne"></button>
+                                    <button type="button" class="color-swatch" data-value="lavender" data-color="#b19acb" style="background: #b19acb;" title="Lavender"></button>
+                                    <button type="button" class="color-swatch" data-value="midnight" data-color="#1c1c3c" style="background: #1c1c3c;" title="Midnight Navy"></button>
+                                    <button type="button" class="color-swatch" data-value="sage" data-color="#b8c4ae" style="background: #b8c4ae;" title="Sage Garden"></button>
+                                    <button type="button" class="color-swatch" data-value="rose" data-color="#f3c0c6" style="background: #f3c0c6;" title="Rosewater"></button>
+                                </div>
+                            </div>
+                            
+                            <!-- Accent Buttons -->
+                            <div>
+                                <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.75rem;">Accent</label>
+                                <div class="option-button-group" data-field="avatar_{{ avatar_index }}_accent">
+                                    <button type="button" class="option-button" data-value="na">None</button>
+                                    <button type="button" class="option-button" data-value="floral">Garden Florals</button>
+                                    <button type="button" class="option-button" data-value="pocket-square">Pocket Square</button>
+                                    <button type="button" class="option-button" data-value="veil">Veil</button>
+                                    <button type="button" class="option-button" data-value="bow-tie">Bow Tie</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center;">
+                            <div style="background: #f9f9f9; padding: 2rem; border-radius: 12px; display: inline-block;">
+                                <img
+                                    src="https://api.dicebear.com/9.x/personas/svg?seed=preview-{{ avatar_index }}"
+                                    alt="Avatar preview {{ forloop.counter }}"
+                                    data-avatar-preview="{{ avatar_index }}"
+                                    style="width: 240px; height: 240px; display: block; border-radius: 8px;"
+                                />
+                                <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; color: #6b6b6b; margin: 1rem 0 0 0;">Your avatar will appear in the chapel</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+            {% endfor %}
+            
+            <div style="text-align: center; padding-top: 2rem;">
+                <button type="submit" style="padding: 1rem 3rem; background: #4c2a4f; color: white; border: none; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; cursor: pointer;">Complete RSVP</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<style>
+.avatar-customization-page label {
+    display: block;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.1rem;
+    color: #2b2b2b;
+    margin-bottom: 0.5rem;
+}
+
+/* Color Swatch Styles */
+.color-swatch-group {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.color-swatch {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.color-swatch:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.color-swatch.active {
+    border-color: #4c2a4f;
+    box-shadow: 0 0 0 2px white, 0 0 0 4px #4c2a4f;
+}
+
+/* Option Button Styles */
+.option-button-group {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.option-button {
+    padding: 0.6rem 1.2rem;
+    border: 2px solid #d0d0d0;
+    border-radius: 6px;
+    background: white;
+    color: #2b2b2b;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.option-button:hover {
+    border-color: #4c2a4f;
+    background: #f9f9f9;
+}
+
+.option-button.active {
+    background: #4c2a4f;
+    color: white;
+    border-color: #4c2a4f;
+}
+
+@media (max-width: 768px) {
+    .avatar-customization-page div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .color-swatch {
+        width: 40px;
+        height: 40px;
+    }
+}
+</style>
+
+<script>
+// Initialize swatches and buttons with active state for each avatar
+document.addEventListener('DOMContentLoaded', function() {
+    const partySize = {{ party_size }};
+    
+    for (let i = 0; i < partySize; i++) {
+        // Set initial active states for this avatar
+        const fields = [`avatar_${i}_skin_tone`, `avatar_${i}_hair_color`, `avatar_${i}_hair_style`, `avatar_${i}_outfit_color`, `avatar_${i}_accent`];
+        fields.forEach(field => {
+            const hiddenInput = document.getElementById('id_' + field);
+            if (hiddenInput) {
+                const value = hiddenInput.value;
+                const container = document.querySelector(`[data-field="${field}"]`);
+                if (container) {
+                    const activeElement = container.querySelector(`[data-value="${value}"]`);
+                    if (activeElement) {
+                        activeElement.classList.add('active');
+                    }
+                }
+            }
+        });
+        
+        // Handle color swatch clicks for this avatar
+        const avatarBuilder = document.querySelector(`[data-avatar-index="${i}"]`);
+        if (avatarBuilder) {
+            avatarBuilder.querySelectorAll('.color-swatch').forEach(swatch => {
+                swatch.addEventListener('click', function() {
+                    const field = this.closest('[data-field]').dataset.field;
+                    const value = this.dataset.value;
+                    const hiddenInput = document.getElementById('id_' + field);
+                    
+                    if (hiddenInput) {
+                        hiddenInput.value = value;
+                        hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        updateAvatarPreview(i);
+                    }
+                    
+                    this.closest('[data-field]').querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Handle option button clicks for this avatar
+            avatarBuilder.querySelectorAll('.option-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const field = this.closest('[data-field]').dataset.field;
+                    const value = this.dataset.value;
+                    const hiddenInput = document.getElementById('id_' + field);
+                    
+                    if (hiddenInput) {
+                        hiddenInput.value = value;
+                        hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        updateAvatarPreview(i);
+                    }
+                    
+                    this.closest('[data-field]').querySelectorAll('.option-button').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+    }
+    
+    // Function to update avatar preview
+    function updateAvatarPreview(index) {
+        const preview = document.querySelector(`[data-avatar-preview="${index}"]`);
+        if (!preview) return;
+        
+        const params = new URLSearchParams();
+        const name = document.getElementById('id_avatar_' + index + '_signature')?.value || 'guest-' + index;
+        params.append('seed', name);
+        
+        // Get values from hidden inputs
+        const skinMap = {
+            porcelain: 'eeb4a4', rosy: 'e7a391', sienna: 'd78774', amber: 'b16a5b', espresso: '92594b'
+        };
+        const hairMap = {
+            midnight: '362c47', espresso: '3b2315', chestnut: '6c4545', copper: 'b45b3e',
+            honey: 'f29c65', platinum: 'dee1f5', 'rose-quartz': 'e16381'
+        };
+        const hairStyleMap = { short: 'shortCombover', long: 'extraLong' };
+        const outfitMap = {
+            champagne: 'f7e8d8', lavender: 'b19acb', midnight: '1c1c3c', sage: 'b8c4ae', rose: 'f3c0c6'
+        };
+        const accentMap = { na: 'open', floral: 'happy', 'pocket-square': 'wink', veil: 'sleep', 'bow-tie': 'glasses' };
+        
+        const skinTone = document.getElementById('id_avatar_' + index + '_skin_tone')?.value || 'porcelain';
+        const hairColor = document.getElementById('id_avatar_' + index + '_hair_color')?.value || 'espresso';
+        const hairStyle = document.getElementById('id_avatar_' + index + '_hair_style')?.value || 'short';
+        const outfitColor = document.getElementById('id_avatar_' + index + '_outfit_color')?.value || 'lavender';
+        const accent = document.getElementById('id_avatar_' + index + '_accent')?.value || 'floral';
+        
+        params.append('skinColor[]', skinMap[skinTone] || skinMap.porcelain);
+        params.append('hairColor[]', hairMap[hairColor] || hairMap.espresso);
+        params.append('hair[]', hairStyleMap[hairStyle] || hairStyleMap.short);
+        params.append('backgroundColor[]', outfitMap[outfitColor] || outfitMap.lavender);
+        params.append('eyes[]', accentMap[accent] || accentMap.floral);
+        params.append('mouth[]', accent === 'bow-tie' ? 'smirk' : 'smile');
+        params.append('nose[]', 'mediumRound');
+        params.append('size', '240');
+        params.append('translateY', '-6');
+        
+        preview.src = 'https://api.dicebear.com/9.x/personas/svg?' + params.toString();
+    }
+    
+    // Update all previews on load
+    for (let i = 0; i < partySize; i++) {
+        updateAvatarPreview(i);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="photo-upload-page">
+    <header>
+        <p class="eyebrow">QR / NFC Portal</p>
+        <h1>Send us photos &amp; videos</h1>
+        <p>
+            Scan the QR on your table card or tap the NFC tag to land here instantly. No app download required—just your
+            joyful snaps.
+        </p>
+    </header>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ photo_form.non_field_errors }}
+        {{ photo_form.as_p }}
+        <button class="cta" type="submit">Share Memory</button>
+    </form>
+    <p class="subtle">Uploads route to our admin dashboard for quick approval.</p>
+</section>
+{% endblock %}

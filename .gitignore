@@ -1,0 +1,23 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# SQLite database
+db.sqlite3
+
+# Media uploads
+media/
+
+# macOS metadata
+.DS_Store
+
+# Node artifacts
+node_modules/
+bun.lockb

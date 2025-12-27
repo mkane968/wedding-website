@@ -1,0 +1,10 @@
+[project]
+name = "wedding-website"
+version = "0.1.0"
+description = "Django wedding experience with RSVP avatars, chapel view, livestream lounge, and QR photo portal."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=6.0",
+    "pillow>=12.0.0",
+]
