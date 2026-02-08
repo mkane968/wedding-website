@@ -1,11 +1,11 @@
-export const seatsPerRow = 6;
+export const seatsPerRow = 10; // 2 pews with 5 seats each (5 per side)
 
 export const layout = {
-    rowSpacing: 3.5,
+    rowSpacing: 6.5, // Increased for better spacing and less crowded look
     seatSpacing: 2.4,
     aisleHalfWidth: 2.5,
     aisleGap: 0.5,
-    rowOffset: 2,
+    rowOffset: 0.5, // Reduced to bring rows closer to bride and groom
 };
 
 export const colors = {
@@ -15,6 +15,6 @@ export const colors = {
     warmWood: 0x8f5a2d,
     pewFrame: 0xffffff,
     pewCushion: 0xc2365b,
-    stageWood: 0xad723c,
+    stageWood: 0xe6c19a, // Lighter golden wood for better contrast with hair
     pipeMetal: 0xdbd8d0,
 };

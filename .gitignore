@@ -21,7 +21,3 @@ media/
 # Node artifacts
 node_modules/
 bun.lockb
-
-# Environment variables
-.env
-.env.local

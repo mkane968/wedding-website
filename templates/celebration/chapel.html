@@ -2,40 +2,24 @@
 {% load static %}
 
 {% block content %}
-<section class="chapel-hero">
-    <header>
-        <p class="eyebrow">Virtual Chapel</p>
-        <h1>Take Your Seat</h1>
-        <p>{{ attendee_count }} loved ones are already in the pews.</p>
-    </header>
-    <p class="subtle">
-        Explore the interactive chapel below. Each floating figure represents a confirmed RSVP, seated in pews that mirror
-        the Proclamation Presbyterian Church chapel layout. Pan or scroll to look around.
-    </p>
-</section>
-
 <section class="chapel-seating">
-    <header>
-        <p class="eyebrow">Seating Chart</p>
-        <h2>Pews fill up as each RSVP arrives</h2>
+    <header style="text-align: center; padding: 2rem 0;">
+        <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 3rem; font-weight: 400; margin: 0; color: #2b2b2b; letter-spacing: 0.02em;">Take Your Seat in the Virtual Chapel</h1>
+            <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; margin: 1rem 0 0 0; color: #666; font-weight: 300;">You are joined by other guests who recently confirmed their attendance!</p>
     </header>
     <div class="chapel-three-wrapper" data-chapel-scene>
         <noscript>Your browser needs JavaScript enabled to view the interactive chapel.</noscript>
     </div>
-    <p class="subtle">Names also appear below for quick reference.</p>
-    <ul class="chapel-seat-list">
-        {% for seat in seating %}
-            <li>Row {{ seat.row }} Seat {{ seat.seat_number }} — {{ seat.name }}</li>
-        {% empty %}
-            <li>Your reserved seat will appear as soon as you RSVP “yes”.</li>
-        {% endfor %}
-    </ul>
 </section>
 
 {{ seating|json_script:"chapel-seating-data" }}
+{% if current_rsvp_id %}
+<script id="current-rsvp-id" type="application/json">{{ current_rsvp_id }}</script>
+{% endif %}
 {% endblock %}
 
 {% block page_scripts %}
     {{ block.super }}
-    <script defer src="{% static 'celebration/js/chapel.js' %}?v={{ timestamp|default:0 }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script defer src="{% static 'celebration/js/chapel.js' %}?v={% now 'U' %}"></script>
 {% endblock %}

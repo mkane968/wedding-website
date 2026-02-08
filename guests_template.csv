@@ -1,0 +1,5 @@
+full_name,email,household_name,side,relationship,invited,verified,notes
+John Doe,john.doe@example.com,The Doe Family,bride,Cousin,true,true,
+Jane Smith,jane.smith@example.com,The Doe Family,bride,Sister,true,true,
+Bob Johnson,bob@example.com,,groom,Best Friend,true,true,
+Alice Williams,alice@example.com,The Williams Family,family,Aunt,true,true,

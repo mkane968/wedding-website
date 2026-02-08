@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="rsvp-page">
+    <div style="text-align: center; padding: 4rem 2rem; max-width: 900px; margin: 0 auto;">
+        <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 3rem; font-weight: 400; margin: 0 0 2rem 0; color: #2b2b2b; letter-spacing: 0.02em;">You Already RSVP'd</h1>
+        
+        <div style="background: #f7f1ee; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
+            <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; color: #2b2b2b; margin: 0 0 1rem 0;">
+                We already have your RSVP on file!
+            </p>
+            <div style="text-align: left; display: inline-block; margin: 1rem 0;">
+                <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin: 0.5rem 0;">
+                    <strong>Status:</strong> {% if rsvp.attending %}Attending{% else %}Unable to Attend{% endif %}
+                </p>
+                <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin: 0.5rem 0;">
+                    <strong>Party Size:</strong> {{ rsvp.party_size }}
+                </p>
+                {% if rsvp.message %}
+                <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin: 0.5rem 0;">
+                    <strong>Your Note:</strong> {{ rsvp.message }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div style="display: grid; gap: 2rem;">
+            <div>
+                <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.8rem; font-weight: 400; margin: 0 0 1rem 0; color: #2b2b2b;">Change Your RSVP</h2>
+                <form method="post" style="display: grid; gap: 1.5rem; text-align: left;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="change">
+                    
+                    <div>
+                        <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Will you be attending?</label>
+                        <div style="display: flex; gap: 2rem; justify-content: center;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="radio" name="attendance_choice" value="yes" {% if rsvp.attending %}checked{% endif %}>
+                                <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b;">Attend</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="radio" name="attendance_choice" value="no" {% if not rsvp.attending %}checked{% endif %}>
+                                <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b;">Unable to Attend</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="party_size" style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Party Size</label>
+                        <input 
+                            type="number" 
+                            id="party_size" 
+                            name="party_size" 
+                            value="{{ rsvp.party_size }}" 
+                            min="1" 
+                            max="10"
+                            required
+                            style="width: 100%; padding: 0.75rem; border: 1px solid #d0d0d0; border-radius: 4px; font-family: system-ui, -apple-system, sans-serif; font-size: 1rem; background: white;"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label for="message" style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Add a Note (Optional)</label>
+                        <textarea 
+                            id="message" 
+                            name="message" 
+                            rows="4"
+                            placeholder="Any special requests or notes for us..."
+                            style="width: 100%; padding: 0.75rem; border: 1px solid #d0d0d0; border-radius: 4px; font-family: system-ui, -apple-system, sans-serif; font-size: 1rem; background: white; resize: vertical;"
+                        >{{ rsvp.message }}</textarea>
+                    </div>
+                    
+                    <button type="submit" style="padding: 1rem 3rem; background: #4c2a4f; color: white; border: none; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; cursor: pointer; justify-self: center;">Update RSVP</button>
+                </form>
+            </div>
+            
+            <div style="border-top: 1px solid #d0d0d0; padding-top: 2rem;">
+                <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.8rem; font-weight: 400; margin: 0 0 1rem 0; color: #2b2b2b;">Keep Your Current RSVP</h2>
+                <form method="post" style="display: inline-block;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="keep">
+                    {% if rsvp.attending %}
+                        <button type="submit" style="padding: 1rem 3rem; background: #4c2a4f; color: white; border: none; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; cursor: pointer;">Go to Chapel</button>
+                    {% else %}
+                        <button type="submit" style="padding: 1rem 3rem; background: #4c2a4f; color: white; border: none; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; cursor: pointer;">Go to Livestream</button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -15,85 +15,113 @@
                 <div class="avatar-builder" data-avatar-index="{{ avatar_index }}" style="border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem; background: #fafafa;">
                     <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 2rem; font-weight: 400; margin: 0 0 2rem 0; color: #2b2b2b; text-align: center;">Person {{ forloop.counter }}</h2>
                     
+                    <!-- Hidden field for signature -->
+                    <input type="hidden" name="avatar_{{ avatar_index }}_signature" id="id_avatar_{{ avatar_index }}_signature" value="{{ config.signature|default:rsvp.guest.full_name }}-{{ forloop.counter }}">
+                    
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
                         <div style="display: grid; gap: 1.5rem;">
-                            <!-- Hidden fields for form submission -->
-                            <input type="hidden" name="avatar_{{ avatar_index }}_skin_tone" id="id_avatar_{{ avatar_index }}_skin_tone" value="{{ config.skin|default:'porcelain' }}">
-                            <input type="hidden" name="avatar_{{ avatar_index }}_hair_color" id="id_avatar_{{ avatar_index }}_hair_color" value="{{ config.hair|default:'espresso' }}">
-                            <input type="hidden" name="avatar_{{ avatar_index }}_hair_style" id="id_avatar_{{ avatar_index }}_hair_style" value="{{ config.hairStyle|default:'short' }}">
-                            <input type="hidden" name="avatar_{{ avatar_index }}_outfit_color" id="id_avatar_{{ avatar_index }}_outfit_color" value="{{ config.outfit|default:'lavender' }}">
-                            <input type="hidden" name="avatar_{{ avatar_index }}_accent" id="id_avatar_{{ avatar_index }}_accent" value="{{ config.accent|default:'floral' }}">
-                            <input type="hidden" name="avatar_{{ avatar_index }}_signature" id="id_avatar_{{ avatar_index }}_signature" value="{{ config.signature|default:rsvp.guest.full_name }}-{{ forloop.counter }}">
-                            
                             <!-- Skin Tone Swatches -->
                             <div>
-                                <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.75rem;">Skin Tone</label>
+                                <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Skin Tone</label>
                                 <div class="color-swatch-group" data-field="avatar_{{ avatar_index }}_skin_tone">
+                                    <input type="hidden" name="avatar_{{ avatar_index }}_skin_tone" id="id_avatar_{{ avatar_index }}_skin_tone" value="{{ config.skin|default:'light1' }}">
+                                    <button type="button" class="color-swatch" data-value="light1" data-color="#edb98a" style="background: #edb98a;" title="Light 1"></button>
                                     <button type="button" class="color-swatch" data-value="porcelain" data-color="#eeb4a4" style="background: #eeb4a4;" title="Porcelain"></button>
                                     <button type="button" class="color-swatch" data-value="rosy" data-color="#e7a391" style="background: #e7a391;" title="Rosy"></button>
                                     <button type="button" class="color-swatch" data-value="sienna" data-color="#d78774" style="background: #d78774;" title="Sienna"></button>
+                                    <button type="button" class="color-swatch" data-value="medium1" data-color="#ae5d29" style="background: #ae5d29;" title="Medium 1"></button>
                                     <button type="button" class="color-swatch" data-value="amber" data-color="#b16a5b" style="background: #b16a5b;" title="Amber"></button>
+                                    <button type="button" class="color-swatch" data-value="dark1" data-color="#614335" style="background: #614335;" title="Dark 1"></button>
                                     <button type="button" class="color-swatch" data-value="espresso" data-color="#92594b" style="background: #92594b;" title="Espresso"></button>
                                 </div>
                             </div>
                             
                             <!-- Hair Color Swatches -->
                             <div>
-                                <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.75rem;">Hair Color</label>
+                                <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Hair Color</label>
                                 <div class="color-swatch-group" data-field="avatar_{{ avatar_index }}_hair_color">
-                                    <button type="button" class="color-swatch" data-value="midnight" data-color="#362c47" style="background: #362c47;" title="Midnight"></button>
-                                    <button type="button" class="color-swatch" data-value="espresso" data-color="#3b2315" style="background: #3b2315;" title="Espresso"></button>
-                                    <button type="button" class="color-swatch" data-value="chestnut" data-color="#6c4545" style="background: #6c4545;" title="Chestnut"></button>
-                                    <button type="button" class="color-swatch" data-value="copper" data-color="#b45b3e" style="background: #b45b3e;" title="Copper"></button>
-                                    <button type="button" class="color-swatch" data-value="honey" data-color="#f29c65" style="background: #f29c65;" title="Honey Blonde"></button>
-                                    <button type="button" class="color-swatch" data-value="platinum" data-color="#dee1f5" style="background: #dee1f5; border: 1px solid #ccc;" title="Platinum"></button>
-                                    <button type="button" class="color-swatch" data-value="rose-quartz" data-color="#e16381" style="background: #e16381;" title="Rose Quartz"></button>
+                                    <input type="hidden" name="avatar_{{ avatar_index }}_hair_color" id="id_avatar_{{ avatar_index }}_hair_color" value="{{ config.hair|default:'dark1' }}">
+                                    <button type="button" class="color-swatch" data-value="dark1" data-color="#2c1b18" style="background: #2c1b18;" title="Dark 1"></button>
+                                    <button type="button" class="color-swatch" data-value="dark2" data-color="#4a312c" style="background: #4a312c;" title="Dark 2"></button>
+                                    <button type="button" class="color-swatch" data-value="brown1" data-color="#724133" style="background: #724133;" title="Brown 1"></button>
+                                    <button type="button" class="color-swatch" data-value="brown2" data-color="#a55728" style="background: #a55728;" title="Brown 2"></button>
+                                    <button type="button" class="color-swatch" data-value="brown3" data-color="#b58143" style="background: #b58143;" title="Brown 3"></button>
+                                    <button type="button" class="color-swatch" data-value="red" data-color="#c93305" style="background: #c93305;" title="Red"></button>
+                                    <button type="button" class="color-swatch" data-value="blonde1" data-color="#d6b370" style="background: #d6b370;" title="Blonde 1"></button>
+                                    <button type="button" class="color-swatch" data-value="blonde2" data-color="#e8e1e1" style="background: #e8e1e1; border: 1px solid #ccc;" title="Blonde 2"></button>
                                 </div>
                             </div>
                             
-                            <!-- Hair Style Buttons -->
+                            <!-- Hair Style Dropdown -->
                             <div>
-                                <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.75rem;">Hair Style</label>
-                                <div class="option-button-group" data-field="avatar_{{ avatar_index }}_hair_style">
-                                    <button type="button" class="option-button" data-value="short">Short sleek</button>
-                                    <button type="button" class="option-button" data-value="long">Long flowing waves</button>
-                                </div>
+                                <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Hair Style</label>
+                                <select name="avatar_{{ avatar_index }}_hair_style" id="id_avatar_{{ avatar_index }}_hair_style" class="custom-select" style="width: 100%; padding: 0.75rem; border: 2px solid #d0d0d0; border-radius: 6px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; background: white; cursor: pointer;">
+                                    <option value="longButNotTooLong" {% if config.hairStyle == 'longButNotTooLong' %}selected{% endif %}>Long 1</option>
+                                    <option value="curvy" {% if config.hairStyle == 'curvy' %}selected{% endif %}>Long 2</option>
+                                    <option value="straightAndStrand" {% if config.hairStyle == 'straightAndStrand' %}selected{% endif %}>Long 3</option>
+                                    <option value="shortWaved" {% if config.hairStyle == 'shortWaved' %}selected{% endif %}>Short 1</option>
+                                    <option value="shortFlat" {% if config.hairStyle == 'shortFlat' or not config.hairStyle %}selected{% endif %}>Short 2</option>
+                                    <option value="sides" {% if config.hairStyle == 'sides' %}selected{% endif %}>Short 3</option>
+                                </select>
                             </div>
                             
-                            <!-- Outfit Color Swatches -->
+                            <!-- Facial Hair Dropdown -->
                             <div>
-                                <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.75rem;">Outfit Color</label>
-                                <div class="color-swatch-group" data-field="avatar_{{ avatar_index }}_outfit_color">
-                                    <button type="button" class="color-swatch" data-value="champagne" data-color="#f7e8d8" style="background: #f7e8d8; border: 1px solid #ccc;" title="Champagne"></button>
-                                    <button type="button" class="color-swatch" data-value="lavender" data-color="#b19acb" style="background: #b19acb;" title="Lavender"></button>
-                                    <button type="button" class="color-swatch" data-value="midnight" data-color="#1c1c3c" style="background: #1c1c3c;" title="Midnight Navy"></button>
-                                    <button type="button" class="color-swatch" data-value="sage" data-color="#b8c4ae" style="background: #b8c4ae;" title="Sage Garden"></button>
-                                    <button type="button" class="color-swatch" data-value="rose" data-color="#f3c0c6" style="background: #f3c0c6;" title="Rosewater"></button>
-                                </div>
+                                <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Facial Hair</label>
+                                <select name="avatar_{{ avatar_index }}_facial_hair" id="id_avatar_{{ avatar_index }}_facial_hair" class="custom-select" style="width: 100%; padding: 0.75rem; border: 2px solid #d0d0d0; border-radius: 6px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; background: white; cursor: pointer;">
+                                    <option value="none" {% if config.facialHair == 'none' or not config.facialHair %}selected{% endif %}>None</option>
+                                    <option value="beard" {% if config.facialHair == 'beard' %}selected{% endif %}>Beard</option>
+                                    <option value="mustache" {% if config.facialHair == 'mustache' %}selected{% endif %}>Mustache</option>
+                                </select>
                             </div>
                             
-                            <!-- Accent Buttons -->
+                            <!-- Accessories Dropdown -->
                             <div>
-                                <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.75rem;">Accent</label>
-                                <div class="option-button-group" data-field="avatar_{{ avatar_index }}_accent">
-                                    <button type="button" class="option-button" data-value="na">None</button>
-                                    <button type="button" class="option-button" data-value="floral">Garden Florals</button>
-                                    <button type="button" class="option-button" data-value="pocket-square">Pocket Square</button>
-                                    <button type="button" class="option-button" data-value="veil">Veil</button>
-                                    <button type="button" class="option-button" data-value="bow-tie">Bow Tie</button>
-                                </div>
+                                <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Accessories</label>
+                                <select name="avatar_{{ avatar_index }}_accessories" id="id_avatar_{{ avatar_index }}_accessories" class="custom-select" style="width: 100%; padding: 0.75rem; border: 2px solid #d0d0d0; border-radius: 6px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; background: white; cursor: pointer;">
+                                    <option value="none" {% if config.accessories == 'none' or not config.accessories %}selected{% endif %}>None</option>
+                                    <option value="glasses" {% if config.accessories == 'glasses' %}selected{% endif %}>Glasses</option>
+                                </select>
                             </div>
                         </div>
                         
                         <div style="text-align: center;">
                             <div style="background: #f9f9f9; padding: 2rem; border-radius: 12px; display: inline-block;">
                                 <img
-                                    src="https://api.dicebear.com/9.x/personas/svg?seed=preview-{{ avatar_index }}"
+                                    src=""
                                     alt="Avatar preview {{ forloop.counter }}"
                                     data-avatar-preview="{{ avatar_index }}"
-                                    style="width: 240px; height: 240px; display: block; border-radius: 8px;"
+                                    style="width: 240px; height: 240px; display: block; border-radius: 8px; opacity: 0;"
+                                    onload="this.style.opacity='1'"
                                 />
                                 <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; color: #6b6b6b; margin: 1rem 0 0 0;">Your avatar will appear in the chapel</p>
+                            </div>
+                            
+                            <!-- Clothes Color and Clothes Type below avatar -->
+                            <div style="display: grid; gap: 1.5rem; margin-top: 2rem; max-width: 400px; margin-left: auto; margin-right: auto;">
+                                <!-- Clothes Color Swatches -->
+                                <div>
+                                    <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Clothes Color</label>
+                                    <div class="color-swatch-group" data-field="avatar_{{ avatar_index }}_clothes_color">
+                                        <input type="hidden" name="avatar_{{ avatar_index }}_clothes_color" id="id_avatar_{{ avatar_index }}_clothes_color" value="{{ config.clothesColor|default:'blue' }}">
+                                        <button type="button" class="color-swatch" data-value="blue" data-color="#65c9ff" style="background: #65c9ff;" title="Blue"></button>
+                                        <button type="button" class="color-swatch" data-value="pink" data-color="#ff488e" style="background: #ff488e;" title="Pink"></button>
+                                        <button type="button" class="color-swatch" data-value="purple" data-color="#b19acb" style="background: #b19acb;" title="Purple"></button>
+                                        <button type="button" class="color-swatch" data-value="green" data-color="#a7ffc4" style="background: #a7ffc4;" title="Green"></button>
+                                        <button type="button" class="color-swatch" data-value="red" data-color="#ff5c5c" style="background: #ff5c5c;" title="Red"></button>
+                                        <button type="button" class="color-swatch" data-value="black" data-color="#262e33" style="background: #262e33;" title="Black"></button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Clothes Type Dropdown -->
+                                <div>
+                                    <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Clothes Type</label>
+                                    <select name="avatar_{{ avatar_index }}_clothes_type" id="id_avatar_{{ avatar_index }}_clothes_type" class="custom-select" style="width: 100%; padding: 0.75rem; border: 2px solid #d0d0d0; border-radius: 6px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; background: white; cursor: pointer;">
+                                        <option value="collarAndSweater" {% if config.clothesType == 'collarAndSweater' or not config.clothesType %}selected{% endif %}>Sweater with Collar</option>
+                                        <option value="blazerAndShirt" {% if config.clothesType == 'blazerAndShirt' %}selected{% endif %}>Blazer</option>
+                                        <option value="shirtVNeck" {% if config.clothesType == 'shirtVNeck' %}selected{% endif %}>V-Neck</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -117,11 +145,39 @@
     margin-bottom: 0.5rem;
 }
 
-/* Color Swatch Styles */
+.custom-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #d0d0d0;
+    border-radius: 6px;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232b2b2b' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 12px;
+    padding-right: 2.5rem;
+}
+
+.custom-select:hover {
+    border-color: #4c2a4f;
+}
+
+.custom-select:focus {
+    outline: none;
+    border-color: #4c2a4f;
+    box-shadow: 0 0 0 3px rgba(76, 42, 79, 0.1);
+}
+
+/* Color swatch styles */
 .color-swatch-group {
     display: flex;
-    gap: 0.75rem;
     flex-wrap: wrap;
+    gap: 0.75rem;
 }
 
 .color-swatch {
@@ -145,156 +201,178 @@
     box-shadow: 0 0 0 2px white, 0 0 0 4px #4c2a4f;
 }
 
-/* Option Button Styles */
-.option-button-group {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-
-.option-button {
-    padding: 0.6rem 1.2rem;
-    border: 2px solid #d0d0d0;
-    border-radius: 6px;
-    background: white;
+/* Style color options - text will show in dropdown list */
+.color-select option {
     color: #2b2b2b;
-    font-family: 'Cormorant Garamond', Georgia, serif;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.option-button:hover {
-    border-color: #4c2a4f;
-    background: #f9f9f9;
-}
-
-.option-button.active {
-    background: #4c2a4f;
-    color: white;
-    border-color: #4c2a4f;
+    padding: 0.5rem;
 }
 
 @media (max-width: 768px) {
     .avatar-customization-page div[style*="grid-template-columns: 1fr 1fr"] {
         grid-template-columns: 1fr !important;
     }
-    
-    .color-swatch {
-        width: 40px;
-        height: 40px;
-    }
 }
 </style>
 
 <script>
-// Initialize swatches and buttons with active state for each avatar
+// Initialize dropdowns and update previews
 document.addEventListener('DOMContentLoaded', function() {
     const partySize = {{ party_size }};
-    
-    for (let i = 0; i < partySize; i++) {
-        // Set initial active states for this avatar
-        const fields = [`avatar_${i}_skin_tone`, `avatar_${i}_hair_color`, `avatar_${i}_hair_style`, `avatar_${i}_outfit_color`, `avatar_${i}_accent`];
-        fields.forEach(field => {
-            const hiddenInput = document.getElementById('id_' + field);
-            if (hiddenInput) {
-                const value = hiddenInput.value;
-                const container = document.querySelector(`[data-field="${field}"]`);
-                if (container) {
-                    const activeElement = container.querySelector(`[data-value="${value}"]`);
-                    if (activeElement) {
-                        activeElement.classList.add('active');
-                    }
-                }
-            }
-        });
-        
-        // Handle color swatch clicks for this avatar
-        const avatarBuilder = document.querySelector(`[data-avatar-index="${i}"]`);
-        if (avatarBuilder) {
-            avatarBuilder.querySelectorAll('.color-swatch').forEach(swatch => {
-                swatch.addEventListener('click', function() {
-                    const field = this.closest('[data-field]').dataset.field;
-                    const value = this.dataset.value;
-                    const hiddenInput = document.getElementById('id_' + field);
-                    
-                    if (hiddenInput) {
-                        hiddenInput.value = value;
-                        hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        updateAvatarPreview(i);
-                    }
-                    
-                    this.closest('[data-field]').querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-            
-            // Handle option button clicks for this avatar
-            avatarBuilder.querySelectorAll('.option-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    const field = this.closest('[data-field]').dataset.field;
-                    const value = this.dataset.value;
-                    const hiddenInput = document.getElementById('id_' + field);
-                    
-                    if (hiddenInput) {
-                        hiddenInput.value = value;
-                        hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        updateAvatarPreview(i);
-                    }
-                    
-                    this.closest('[data-field]').querySelectorAll('.option-button').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-        }
-    }
     
     // Function to update avatar preview
     function updateAvatarPreview(index) {
         const preview = document.querySelector(`[data-avatar-preview="${index}"]`);
         if (!preview) return;
         
+        // Hide image while loading to prevent old image flash
+        preview.style.opacity = '0';
+        
         const params = new URLSearchParams();
         const name = document.getElementById('id_avatar_' + index + '_signature')?.value || 'guest-' + index;
         params.append('seed', name);
         
-        // Get values from hidden inputs
+        // Get values from dropdowns
         const skinMap = {
+            dark1: '614335', medium1: 'ae5d29', light1: 'edb98a',
             porcelain: 'eeb4a4', rosy: 'e7a391', sienna: 'd78774', amber: 'b16a5b', espresso: '92594b'
         };
+        const hairStyleMap = {
+            shortWaved: 'shortWaved',
+            longButNotTooLong: 'longButNotTooLong',
+            straightAndStrand: 'straightAndStrand',
+            sides: 'sides',
+            shortFlat: 'shortFlat',
+            curvy: 'curvy'
+        };
         const hairMap = {
-            midnight: '362c47', espresso: '3b2315', chestnut: '6c4545', copper: 'b45b3e',
-            honey: 'f29c65', platinum: 'dee1f5', 'rose-quartz': 'e16381'
+            dark1: '2c1b18', dark2: '4a312c', brown1: '724133', brown2: 'a55728',
+            brown3: 'b58143', red: 'c93305', blonde1: 'd6b370', blonde2: 'e8e1e1'
         };
-        const hairStyleMap = { short: 'shortCombover', long: 'extraLong' };
-        const outfitMap = {
-            champagne: 'f7e8d8', lavender: 'b19acb', midnight: '1c1c3c', sage: 'b8c4ae', rose: 'f3c0c6'
+        const clothesColorMap = {
+            pink: 'ff488e', blue: '65c9ff', purple: 'b19acb', green: 'a7ffc4', red: 'ff5c5c', black: '262e33'
         };
-        const accentMap = { na: 'open', floral: 'happy', 'pocket-square': 'wink', veil: 'sleep', 'bow-tie': 'glasses' };
+        const facialHairMap = {
+            none: 'blank',
+            beard: 'beardLight',
+            mustache: 'moustacheMagnum'
+        };
+        const accessoriesMap = { 
+            none: 'blank', 
+            glasses: 'prescription02'
+        };
         
-        const skinTone = document.getElementById('id_avatar_' + index + '_skin_tone')?.value || 'porcelain';
-        const hairColor = document.getElementById('id_avatar_' + index + '_hair_color')?.value || 'espresso';
-        const hairStyle = document.getElementById('id_avatar_' + index + '_hair_style')?.value || 'short';
-        const outfitColor = document.getElementById('id_avatar_' + index + '_outfit_color')?.value || 'lavender';
-        const accent = document.getElementById('id_avatar_' + index + '_accent')?.value || 'floral';
+        const skinTone = document.getElementById('id_avatar_' + index + '_skin_tone')?.value || 'light1';
+        const hairColor = document.getElementById('id_avatar_' + index + '_hair_color')?.value || 'dark1';
+        const hairStyle = document.getElementById('id_avatar_' + index + '_hair_style')?.value || 'shortFlat';
+        const clothesType = document.getElementById('id_avatar_' + index + '_clothes_type')?.value || 'collarAndSweater';
+        const clothesColor = document.getElementById('id_avatar_' + index + '_clothes_color')?.value || 'blue';
+        const facialHair = document.getElementById('id_avatar_' + index + '_facial_hair')?.value || 'none';
+        const accessories = document.getElementById('id_avatar_' + index + '_accessories')?.value || 'none';
         
-        params.append('skinColor[]', skinMap[skinTone] || skinMap.porcelain);
-        params.append('hairColor[]', hairMap[hairColor] || hairMap.espresso);
-        params.append('hair[]', hairStyleMap[hairStyle] || hairStyleMap.short);
-        params.append('backgroundColor[]', outfitMap[outfitColor] || outfitMap.lavender);
-        params.append('eyes[]', accentMap[accent] || accentMap.floral);
-        params.append('mouth[]', accent === 'bow-tie' ? 'smirk' : 'smile');
-        params.append('nose[]', 'mediumRound');
-        params.append('size', '240');
-        params.append('translateY', '-6');
+        const hairColorValue = hairMap[hairColor] || hairMap.dark1;
+        const clothesColorValue = clothesColorMap[clothesColor] || clothesColorMap.blue;
+        params.append('skinColor', skinMap[skinTone] || skinMap.light1);
+        params.append('hairColor', hairColorValue);
+        params.append('top', hairStyleMap[hairStyle] || hairStyleMap.shortFlat);
+        params.append('clothing', clothesType);
+        params.append('clothesColor', clothesColorValue);
+        params.append('eyes', 'default');  // Default eyes
+        params.append('eyebrows', 'defaultNatural');
+        params.append('mouth', 'smile');  // Default smile
+        params.append('facialHairColor', hairColorValue);  // Facial hair and eyebrow color matches hair color
         
-        preview.src = 'https://api.dicebear.com/9.x/personas/svg?' + params.toString();
+        // Add facial hair if selected
+        const facialHairValue = facialHairMap[facialHair] || facialHairMap.none;
+        if (facialHairValue === 'blank') {
+            params.append('facialHairProbability', '0');
+        } else {
+            params.append('facialHair', facialHairValue);
+            params.append('facialHairProbability', '100');  // Ensure facial hair appears when selected
+        }
+        
+        // Only add accessories if not "none", otherwise set probability to 0
+        const accessoriesValue = accessoriesMap[accessories] || accessoriesMap.none;
+        if (accessoriesValue === 'blank') {
+            params.append('accessoriesProbability', '0');
+        } else {
+            params.append('accessories', accessoriesValue);
+            params.append('accessoriesProbability', '100');  // Ensure accessories appear when selected
+        }
+        
+        // Add cache-busting parameter to prevent old cached images
+        params.append('t', Date.now());
+        
+        // Set up load handler to show image only when new one loads
+        const loadHandler = function() {
+            preview.style.opacity = '1';
+            preview.removeEventListener('load', loadHandler);
+        };
+        preview.addEventListener('load', loadHandler);
+        
+        preview.src = 'https://api.dicebear.com/9.x/avataaars/svg?' + params.toString();
+    }
+    
+    // Set up event listeners for all dropdowns and color swatches
+    for (let i = 0; i < partySize; i++) {
+        // Handle dropdowns
+        const dropdownFields = [
+            `avatar_${i}_hair_style`,
+            `avatar_${i}_clothes_type`,
+            `avatar_${i}_facial_hair`,
+            `avatar_${i}_accessories`
+        ];
+        
+        dropdownFields.forEach(field => {
+            const select = document.getElementById('id_' + field);
+            if (select) {
+                select.addEventListener('change', function() {
+                    updateAvatarPreview(i);
+                });
+            }
+        });
+        
+        // Handle color swatches
+        const colorFields = [
+            `avatar_${i}_skin_tone`,
+            `avatar_${i}_hair_color`,
+            `avatar_${i}_clothes_color`
+        ];
+        
+        colorFields.forEach(field => {
+            const swatchGroup = document.querySelector(`[data-field="${field}"]`);
+            if (swatchGroup) {
+                const hiddenInput = document.getElementById('id_' + field);
+                swatchGroup.querySelectorAll('.color-swatch').forEach(swatch => {
+                    swatch.addEventListener('click', function() {
+                        const value = this.dataset.value;
+                        if (hiddenInput) {
+                            hiddenInput.value = value;
+                            // Update active state
+                            swatchGroup.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                            this.classList.add('active');
+                            updateAvatarPreview(i);
+                        }
+                    });
+                });
+                
+                // Set initial active state
+                if (hiddenInput) {
+                    const currentValue = hiddenInput.value;
+                    const activeSwatch = swatchGroup.querySelector(`[data-value="${currentValue}"]`);
+                    if (activeSwatch) {
+                        activeSwatch.classList.add('active');
+                    }
+                }
+            }
+        });
     }
     
     // Update all previews on load
-    for (let i = 0; i < partySize; i++) {
-        updateAvatarPreview(i);
-    }
+    setTimeout(function() {
+        for (let i = 0; i < partySize; i++) {
+            updateAvatarPreview(i);
+        }
+    }, 0);
 });
 </script>
 {% endblock %}

@@ -7,8 +7,8 @@ from .models import PhotoSubmission
 
 class RSVPForm(forms.Form):
     ATTENDANCE_CHOICES = [
-        ("yes", "Joyfully Accept"),
-        ("no", "Celebrate from Afar (Livestream)"),
+        ("yes", "Attend"),
+        ("no", "Unable to Attend"),
     ]
     MEAL_CHOICES = [
         ("chef", "Chef's Seasonal Selection"),
@@ -52,9 +52,9 @@ class RSVPForm(forms.Form):
         ("bow-tie", "Bow Tie"),
     ]
 
-    full_name = forms.CharField(
-        max_length=160,
-        widget=forms.TextInput(attrs={"placeholder": "Jordan Guest"}),
+    guest_id = forms.IntegerField(
+        required=True,
+        widget=forms.HiddenInput(),
     )
     email = forms.EmailField(
         required=False,

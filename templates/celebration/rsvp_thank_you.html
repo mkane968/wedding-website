@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div style="text-align: center; padding: 4rem 2rem; max-width: 900px; margin: 0 auto;">
+    <img src="{% static 'rose-border-2.png' %}" alt="Floral border" style="max-width: 800px; width: 100%; height: auto; display: block; margin: 0 auto 2rem;" />
+    
+    <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 3rem; font-weight: 400; margin: 0 0 1.5rem 0; color: #2b2b2b; letter-spacing: 0.02em;">Thank You for RSVPing!</h1>
+    
+    {% if rsvp.attending %}
+        <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; color: #2b2b2b; margin: 0 0 3rem 0; line-height: 1.6;">
+            Check back on this website for updates.
+        </p>
+        
+        <div style="margin-top: 4rem;">
+            <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; color: #6b6b6b; margin: 0 0 1.5rem 0; line-height: 1.6;">
+                We've coded a little surprise for guests to get excited for the big day—a virtual chapel! Create an avatar and join the other guests inside the chapel.
+            </p>
+            
+            <a href="{% url 'avatar-customization' rsvp.id %}" style="display: inline-block; padding: 1rem 2.5rem; background: #4c2a4f; color: white; border: 2px solid #4c2a4f; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; text-decoration: none; transition: all 0.3s ease; margin-top: 1rem;">
+                Create Your Avatar
+            </a>
+        </div>
+    {% else %}
+        <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; color: #2b2b2b; margin: 0 0 1.5rem 0; line-height: 1.6;">
+            You will be missed and we hope to see you soon.
+        </p>
+        
+        <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; color: #6b6b6b; margin: 0 0 3rem 0; line-height: 1.6;">
+            Unable to attend? You can still celebrate with us digitally by watching the livestream.
+        </p>
+        
+        <a href="{% url 'livestream' %}" style="display: inline-block; padding: 1rem 2.5rem; background: #4c2a4f; color: white; border: 2px solid #4c2a4f; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; text-decoration: none; transition: all 0.3s ease; margin-top: 1rem;">
+            View Livestream
+        </a>
+    {% endif %}
+</div>
+{% endblock %}

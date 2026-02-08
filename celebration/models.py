@@ -29,7 +29,7 @@ class Guest(models.Model):
     ]
 
     full_name = models.CharField(max_length=160)
-    email = models.EmailField()
+    email = models.EmailField(blank=True)
     household_name = models.CharField(
         max_length=160,
         blank=True,
@@ -46,7 +46,8 @@ class Guest(models.Model):
 
     class Meta:
         ordering = ["full_name"]
-        unique_together = ("full_name", "email")
+        # Note: unique_together removed since email can be blank
+        # Guests are identified by full_name for RSVP search
 
     def __str__(self) -> str:
         return f"{self.full_name} ({self.email})"

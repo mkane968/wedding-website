@@ -2,7 +2,9 @@ import * as THREE from "three";
 import { colors, layout } from "./constants.js";
 
 export function addEnvironment(scene) {
-    const floorGeometry = new THREE.PlaneGeometry(60, 80);
+    // Extended floor beyond the organ/podium
+    const floorLength = 150; // Extended floor
+    const floorGeometry = new THREE.PlaneGeometry(80, floorLength);
     const floorMaterial = new THREE.MeshStandardMaterial({
         color: colors.warmWood,
         roughness: 0.6,
@@ -10,9 +12,12 @@ export function addEnvironment(scene) {
     });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
+    floor.position.set(0, 0, -15); // Center at z=-15 so it extends from z=-90 to z=60
     scene.add(floor);
 
-    const aisleGeometry = new THREE.PlaneGeometry(layout.aisleHalfWidth * 2, 70);
+    // Extended aisle beyond the organ/podium
+    const aisleLength = 140;
+    const aisleGeometry = new THREE.PlaneGeometry(layout.aisleHalfWidth * 2, aisleLength);
     const aisleMaterial = new THREE.MeshStandardMaterial({
         color: colors.lavender,
         transparent: true,
@@ -20,17 +25,19 @@ export function addEnvironment(scene) {
     });
     const aisle = new THREE.Mesh(aisleGeometry, aisleMaterial);
     aisle.rotation.x = -Math.PI / 2;
-    aisle.position.set(0, 0.01, -15);
+    aisle.position.set(0, 0.01, -15); // Center at z=-15 so it extends from z=-85 to z=55
     scene.add(aisle);
 
-    const runnerGeometry = new THREE.PlaneGeometry(layout.aisleHalfWidth * 1.4, 70);
+    // Extended runner beyond the organ/podium
+    const runnerLength = 140;
+    const runnerGeometry = new THREE.PlaneGeometry(layout.aisleHalfWidth * 1.4, runnerLength);
     const runnerMaterial = new THREE.MeshStandardMaterial({
         color: 0xffffff,
         roughness: 0.3,
     });
     const runner = new THREE.Mesh(runnerGeometry, runnerMaterial);
     runner.rotation.x = -Math.PI / 2;
-    runner.position.set(0, 0.02, -15);
+    runner.position.set(0, 0.02, -15); // Center at z=-15 so it extends from z=-85 to z=55
     scene.add(runner);
 
     const stageGeometry = new THREE.BoxGeometry(22, 0.8, 16);

@@ -12,6 +12,10 @@ const textureLoader = new THREE.TextureLoader();
 textureLoader.crossOrigin = "anonymous";
 
 const SKIN_PALETTE = {
+    dark1: "614335",
+    medium1: "ae5d29",
+    light1: "edb98a",
+    // Additional skin tones from before
     porcelain: "eeb4a4",
     rosy: "e7a391",
     sienna: "d78774",
@@ -20,18 +24,23 @@ const SKIN_PALETTE = {
 };
 
 const HAIR_COLORS = {
-    midnight: "362c47",
-    espresso: "3b2315",
-    chestnut: "6c4545",
-    copper: "b45b3e",
-    honey: "f29c65",
-    platinum: "dee1f5",
-    "rose-quartz": "e16381",
+    dark1: "2c1b18",
+    dark2: "4a312c",
+    brown1: "724133",
+    brown2: "a55728",
+    brown3: "b58143",
+    red: "c93305",
+    blonde1: "d6b370",
+    blonde2: "e8e1e1",
 };
 
 const HAIR_STYLES = {
-    short: "shortCombover",
-    long: "extraLong",
+    shortWaved: "shortWaved",
+    longButNotTooLong: "longButNotTooLong",
+    straightAndStrand: "straightAndStrand",
+    sides: "sides",
+    shortFlat: "shortFlat",
+    curvy: "curvy",
 };
 
 const BACKGROUND_SWATCHES = {
@@ -44,15 +53,59 @@ const BACKGROUND_SWATCHES = {
 };
 
 const ACCENT_EYES = {
-    na: "open",
+    na: "default",
     floral: "happy",
     "pocket-square": "wink",
     veil: "sleep",
-    "bow-tie": "glasses",
+    "bow-tie": "default",  // Glasses will be handled via accessories
 };
 
 const ACCENT_MOUTH = {
+    na: "default",
+    floral: "smile",
+    "pocket-square": "smile",
+    veil: "default",
     "bow-tie": "smirk",
+};
+
+const CLOTHING_STYLES = {
+    blazer: "blazerAndShirt",
+    vneck: "shirtVNeck",
+};
+
+const FACIAL_HAIR_OPTIONS = {
+    none: "blank",
+    beard: "beardLight",
+    mustache: "moustacheMagnum",
+};
+
+const ACCESSORIES_OPTIONS = {
+    none: "blank",
+    glasses: "prescription02",
+};
+
+const ACCESSORIES_COLORS = {
+    dark: "3c4f5c",
+    blue: "65c9ff",
+    black: "262e33",
+};
+
+const CLOTHES_COLORS = {
+    pink: "ff488e",
+    blue: "65c9ff",
+    purple: "b19acb",  // Using lavender as purple
+    green: "a7ffc4",
+    red: "ff5c5c",
+    black: "262e33",
+};
+
+// Legacy mapping for accent-based accessories (for backward compatibility)
+const ACCENT_ACCESSORIES = {
+    na: "blank",
+    floral: "blank",
+    "pocket-square": "blank",
+    veil: "blank",
+    "bow-tie": "prescription01",  // Glasses for bow-tie accent
 };
 
 function seatOffset(seatIndex) {
@@ -65,23 +118,48 @@ function seatOffset(seatIndex) {
 
 function buildAvatarUrl(config = {}, fallbackSeed = "guest") {
     const params = new URLSearchParams();
-    const accent = config.accent || "na";
     params.append("seed", (config.signature || fallbackSeed || "guest-avatar").trim());
-    params.append("skinColor[]", SKIN_PALETTE[config.skin] || SKIN_PALETTE.porcelain);
-    params.append("hair[]", HAIR_STYLES[config.hairStyle] || HAIR_STYLES.short);
-    params.append("hairColor[]", HAIR_COLORS[config.hair] || HAIR_COLORS.espresso);
-    params.append(
-        "backgroundColor[]",
-        BACKGROUND_SWATCHES[config.outfit] || BACKGROUND_SWATCHES.lavender
-    );
-    params.append("eyes[]", ACCENT_EYES[accent] || ACCENT_EYES.na);
-    params.append("mouth[]", ACCENT_MOUTH[accent] || "smile");
-    params.append("nose[]", "mediumRound");
-    params.append("size", "210");
-    params.append("translateY", "-6");
-    return `https://api.dicebear.com/9.x/personas/svg?${params.toString()}`;
+    const hairColor = HAIR_COLORS[config.hair] || HAIR_COLORS.dark1;
+    const hairStyle = HAIR_STYLES[config.hairStyle] || HAIR_STYLES.shortFlat;
+    const clothesColor = CLOTHES_COLORS[config.clothesColor] || CLOTHES_COLORS.blue;
+    params.append("skinColor", SKIN_PALETTE[config.skin] || SKIN_PALETTE.light1);
+    params.append("hairColor", hairColor);
+    params.append("top", hairStyle);
+    params.append("clothing", config.clothesType || "collarAndSweater");  // Use selected clothing style
+    params.append("clothesColor", clothesColor);
+    params.append("eyes", "default");  // Default eyes
+    params.append("eyebrows", "defaultNatural");
+    params.append("mouth", "smile");  // Default smile
+    params.append("facialHairColor", hairColor);  // Facial hair and eyebrow color matches hair color
+    
+    // Facial hair: use facialHair field or default to none
+    const facialHair = FACIAL_HAIR_OPTIONS[config.facialHair] || "blank";
+    
+    // Only add facial hair if not "blank", otherwise set probability to 0
+    if (facialHair === "blank") {
+        params.append("facialHairProbability", "0");
+    } else {
+        params.append("facialHair", facialHair);
+        params.append("facialHairProbability", "100");  // Ensure facial hair appears when selected
+    }
+    
+    // Accessories: use accessories field or default to none
+    const accessories = ACCESSORIES_OPTIONS[config.accessories] || "blank";
+    
+    // Only add accessories if not "blank", otherwise set probability to 0
+    if (accessories === "blank") {
+        params.append("accessoriesProbability", "0");
+    } else {
+        params.append("accessories", accessories);
+        params.append("accessoriesProbability", "100");  // Ensure accessories appear when selected
+    }
+    
+    return `https://api.dicebear.com/9.x/avataaars/svg?${params.toString()}`;
 }
 
+// 3D AVATARS - COMMENTED OUT (BACKUP)
+// Using 2D avatars instead for better compatibility
+/*
 export function addAvatars(scene, seating) {
     seating.forEach((seat) => {
         const seatIdx = typeof seat.seat_index === "number" ? seat.seat_index : 0;
@@ -138,6 +216,7 @@ export function addAvatars(scene, seating) {
         );
     });
 }
+*/
 
 export function addCouple(scene) {
     const bride = createHeroAvatar(0.8, colors.plum);

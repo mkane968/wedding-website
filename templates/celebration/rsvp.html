@@ -6,14 +6,29 @@
     <div style="text-align: center; padding: 4rem 2rem; max-width: 900px; margin: 0 auto;">
         <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 3rem; font-weight: 400; margin: 0 0 2rem 0; color: #2b2b2b; letter-spacing: 0.02em;">RSVP</h1>
         
-        <form method="post" novalidate style="display: grid; gap: 2rem;">
+        <form method="post" novalidate style="display: grid; gap: 2rem;" id="rsvp-form">
             {% csrf_token %}
             
             <div style="display: grid; gap: 1.5rem;">
                 <div>
-                    {{ rsvp_form.full_name.label_tag }}
-                    {{ rsvp_form.full_name }}
-                    {{ rsvp_form.full_name.errors }}
+                    <label for="guest-search" style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Find Your Invitation</label>
+                    <div style="position: relative;">
+                        <input 
+                            type="text" 
+                            id="guest-search" 
+                            placeholder="Search by your name..." 
+                            autocomplete="off"
+                            style="width: 100%; padding: 0.75rem; border: 1px solid #d0d0d0; border-radius: 4px; font-family: system-ui, -apple-system, sans-serif; font-size: 1rem; background: white;"
+                        />
+                        <div id="search-results" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #d0d0d0; border-radius: 4px; margin-top: 0.25rem; max-height: 300px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></div>
+                    </div>
+                    {{ rsvp_form.guest_id }}
+                    <div id="selected-guest" style="display: none; margin-top: 0.75rem; padding: 0.75rem; background: #f5f5f5; border-radius: 4px;">
+                        <span id="selected-guest-name" style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b;"></span>
+                        <button type="button" id="clear-selection" style="margin-left: 1rem; padding: 0.25rem 0.75rem; background: #d0d0d0; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">Change</button>
+                    </div>
+                    <div id="guest-search-error" style="display: none; color: #d32f2f; font-size: 0.9rem; margin-top: 0.5rem;">Please select your name from the search results.</div>
+                    {{ rsvp_form.guest_id.errors }}
                 </div>
                 
                 <div>
@@ -40,11 +55,122 @@
             </div>
             
             <div style="text-align: center; padding-top: 2rem;">
-                <button type="submit" style="padding: 1rem 3rem; background: #4c2a4f; color: white; border: none; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; cursor: pointer;">Continue to Avatar Customization</button>
+                <button type="submit" id="submit-btn" style="padding: 1rem 3rem; background: #4c2a4f; color: white; border: none; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; cursor: pointer;">Submit RSVP</button>
             </div>
         </form>
     </div>
 </section>
+
+<script>
+(function() {
+    const searchInput = document.getElementById('guest-search');
+    const resultsDiv = document.getElementById('search-results');
+    const guestIdField = document.getElementById('id_guest_id');
+    const selectedGuestDiv = document.getElementById('selected-guest');
+    const selectedGuestName = document.getElementById('selected-guest-name');
+    const clearSelectionBtn = document.getElementById('clear-selection');
+    const errorDiv = document.getElementById('guest-search-error');
+    const form = document.getElementById('rsvp-form');
+    let searchTimeout = null;
+
+    function performSearch(query) {
+        if (query.length < 2) {
+            resultsDiv.style.display = 'none';
+            return;
+        }
+
+        fetch(`{% url 'guest-search' %}?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                displayResults(data.guests);
+            })
+            .catch(error => {
+                console.error('Search error:', error);
+                resultsDiv.style.display = 'none';
+            });
+    }
+
+    function displayResults(guests) {
+        if (guests.length === 0) {
+            resultsDiv.innerHTML = '<div style="padding: 1rem; color: #6b6b6b; text-align: center;">No matches found. Please check your spelling or contact us.</div>';
+            resultsDiv.style.display = 'block';
+            return;
+        }
+
+        resultsDiv.innerHTML = guests.map(guest => `
+            <div class="search-result-item" 
+                 data-guest-id="${guest.id}" 
+                 data-guest-name="${guest.name}"
+                 style="padding: 0.75rem 1rem; cursor: pointer; border-bottom: 1px solid #e0e0e0; transition: background 0.2s;"
+                 onmouseover="this.style.background='#f5f5f5'"
+                 onmouseout="this.style.background='white'">
+                <div style="font-weight: 500; color: #2b2b2b;">${guest.name}</div>
+                ${guest.household ? `<div style="font-size: 0.85rem; color: #6b6b6b; margin-top: 0.25rem;">${guest.household}</div>` : ''}
+            </div>
+        `).join('');
+
+        // Add click handlers
+        resultsDiv.querySelectorAll('.search-result-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const guestId = this.dataset.guestId;
+                const guestName = this.dataset.guestName;
+                selectGuest(guestId, guestName);
+            });
+        });
+
+        resultsDiv.style.display = 'block';
+    }
+
+    function selectGuest(guestId, guestName) {
+        guestIdField.value = guestId;
+        selectedGuestName.textContent = guestName;
+        selectedGuestDiv.style.display = 'block';
+        searchInput.style.display = 'none';
+        resultsDiv.style.display = 'none';
+        errorDiv.style.display = 'none';
+    }
+
+    function clearSelection() {
+        guestIdField.value = '';
+        selectedGuestDiv.style.display = 'none';
+        searchInput.style.display = 'block';
+        searchInput.value = '';
+        resultsDiv.style.display = 'none';
+    }
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const query = this.value.trim();
+        
+        if (query.length >= 2) {
+            searchTimeout = setTimeout(() => performSearch(query), 300);
+        } else {
+            resultsDiv.style.display = 'none';
+        }
+    });
+
+    clearSelectionBtn.addEventListener('click', clearSelection);
+
+    // Close results when clicking outside
+    document.addEventListener('click', function(event) {
+        const searchContainer = searchInput.parentElement;
+        if (!searchContainer.contains(event.target) && !resultsDiv.contains(event.target)) {
+            resultsDiv.style.display = 'none';
+        }
+    });
+
+    // Validate on form submit
+    form.addEventListener('submit', function(e) {
+        if (!guestIdField.value) {
+            e.preventDefault();
+            errorDiv.style.display = 'block';
+            searchInput.style.display = 'block';
+            selectedGuestDiv.style.display = 'none';
+            searchInput.focus();
+        }
+    });
+})();
+</script>
 
 <style>
 .rsvp-page label {
