@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
+from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -147,6 +151,8 @@ def rsvp_view(request):
                 "hairStyle": "short",
                 "outfit": "lavender",
                 "accent": "floral",
+                "accessories": "glasses",
+                "accessoriesColor": "black",
                 "signature": guest.full_name.strip() or "guest-avatar",
             }
             avatar_configs = [default_config.copy() for _ in range(party_size)]
@@ -205,6 +211,8 @@ def rsvp_existing_view(request, rsvp_id):
                     "hairStyle": "short",
                     "outfit": "lavender",
                     "accent": "floral",
+                    "accessories": "glasses",
+                    "accessoriesColor": "black",
                     "signature": rsvp.guest.full_name.strip() or "guest-avatar",
                 }
                 avatar_configs = [default_config.copy() for _ in range(party_size)]
@@ -278,7 +286,8 @@ def avatar_customization_view(request, rsvp_id):
                 "clothesType": "collarAndSweater",
                 "clothesColor": "blue",
                 "facialHair": "none",
-                "accessories": "none",
+                "accessories": "glasses",
+                "accessoriesColor": "black",
                 "signature": rsvp.guest.full_name.strip() or "guest-avatar",
             }
             rsvp.avatar_config = [default_config.copy() for _ in range(rsvp.party_size)]
@@ -291,7 +300,8 @@ def avatar_customization_view(request, rsvp_id):
         "clothesType": "collarAndSweater",
         "clothesColor": "blue",
         "facialHair": "none",
-        "accessories": "none",
+        "accessories": "glasses",
+        "accessoriesColor": "black",
     }
     
     for i in range(len(rsvp.avatar_config), rsvp.party_size):
@@ -317,7 +327,9 @@ def avatar_customization_view(request, rsvp_id):
         if "facialHair" not in config or not config["facialHair"]:
             config["facialHair"] = "none"
         if "accessories" not in config or not config["accessories"]:
-            config["accessories"] = "none"
+            config["accessories"] = "glasses"
+        if "accessoriesColor" not in config or not config["accessoriesColor"]:
+            config["accessoriesColor"] = "black"
         if "signature" not in config or not config["signature"]:
             config["signature"] = f"{rsvp.guest.full_name.strip()}-{i+1}" or f"guest-avatar-{i+1}"
         rsvp.avatar_config[i] = config
@@ -463,4 +475,72 @@ def guest_search_view(request):
     ]
     
     return JsonResponse({"guests": results})
+
+
+# --- Dashboard (custom admin panel for RSVP tracking) ---
+
+
+def dashboard_login_view(request):
+    """Custom login for the RSVP dashboard (uses same Django User as admin)."""
+    if request.user.is_authenticated and request.user.is_staff:
+        return redirect("dashboard")
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            next_url = request.GET.get("next") or reverse("dashboard")
+            return redirect(next_url)
+        messages.error(request, "Invalid username or password.")
+    else:
+        form = AuthenticationForm(request)
+    return render(request, "celebration/dashboard_login.html", {"form": form})
+
+
+def dashboard_logout_view(request):
+    """Log out from dashboard and redirect to main site."""
+    logout(request)
+    messages.success(request, "You have been logged out.")
+    return redirect("home")
+
+
+@login_required(login_url="/dashboard/login/")
+def dashboard_home_view(request):
+    """Dashboard home: stats and RSVP list (staff only)."""
+    if not request.user.is_staff:
+        messages.error(request, "You don't have permission to view the dashboard.")
+        return redirect("home")
+    rsvps = RSVP.objects.select_related("guest").order_by("-created_at")
+    total = rsvps.count()
+    attending = rsvps.filter(attending=True)
+    attending_count = attending.count()
+    livestream_count = rsvps.filter(livestream_requested=True).count()
+    total_guests = sum(r.party_size for r in attending)
+    meal_counts = (
+        rsvps.filter(attending=True)
+        .exclude(meal_preference="")
+        .values("meal_preference")
+        .annotate(count=Count("id"))
+    )
+    meal_labels = dict(RSVP.MEAL_CHOICES)
+    meal_breakdown = [{"label": meal_labels.get(m["meal_preference"], m["meal_preference"]), "count": m["count"]} for m in meal_counts]
+    # Guests who are invited but have no RSVP yet
+    responded_guest_ids = RSVP.objects.values_list("guest_id", flat=True)
+    not_responded = (
+        Guest.objects.filter(invited=True)
+        .exclude(id__in=responded_guest_ids)
+        .order_by("full_name")
+    )
+    not_responded_count = not_responded.count()
+    context = {
+        "rsvps": rsvps,
+        "total_rsvps": total,
+        "attending_count": attending_count,
+        "livestream_count": livestream_count,
+        "total_guests": total_guests,
+        "meal_breakdown": meal_breakdown,
+        "not_responded": not_responded,
+        "not_responded_count": not_responded_count,
+    }
+    return render(request, "celebration/dashboard.html", context)
 

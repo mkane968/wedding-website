@@ -152,6 +152,7 @@ function buildAvatarUrl(config = {}, fallbackSeed = "guest") {
     } else {
         params.append("accessories", accessories);
         params.append("accessoriesProbability", "100");  // Ensure accessories appear when selected
+        params.append("accessoriesColor", ACCESSORIES_COLORS[config.accessoriesColor] || ACCESSORIES_COLORS.black);
     }
     
     return `https://api.dicebear.com/9.x/avataaars/svg?${params.toString()}`;

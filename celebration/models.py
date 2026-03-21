@@ -14,6 +14,8 @@ def default_avatar_config() -> list:
         "hairStyle": "short",
         "outfit": "lavender",
         "accent": "floral",
+        "accessories": "glasses",
+        "accessoriesColor": "black",
         "signature": "guest-avatar",
     }]
 

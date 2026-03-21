@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{% block title %}RSVP Dashboard{% endblock %} | Megan &amp; Stephen</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="{% static 'celebration/css/styles.css' %}" />
+        <style>
+            .dashboard-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 1rem 2rem;
+                background: #4c2a4f;
+                color: #fff;
+                font-family: 'Cormorant Garamond', Georgia, serif;
+            }
+            .dashboard-header h1 { margin: 0; font-size: 1.5rem; font-weight: 500; }
+            .dashboard-nav { display: flex; gap: 1.5rem; align-items: center; }
+            .dashboard-nav a { color: #e8dce8; text-decoration: none; font-size: 1.05rem; }
+            .dashboard-nav a:hover { color: #fff; }
+            .dashboard-main { max-width: 1100px; margin: 0 auto; padding: 2rem; font-family: 'Cormorant Garamond', Georgia, serif; }
+        </style>
+    </head>
+    <body>
+        <header class="dashboard-header">
+            <h1>RSVP Dashboard</h1>
+            <nav class="dashboard-nav">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}">Dashboard</a>
+                    <a href="{% url 'home' %}">View site</a>
+                    <a href="{% url 'dashboard-logout' %}">Log out</a>
+                {% else %}
+                    <a href="{% url 'home' %}">Back to site</a>
+                    <a href="{% url 'dashboard-login' %}">Log in</a>
+                {% endif %}
+            </nav>
+        </header>
+
+        {% if messages %}
+            <section class="flash-messages">
+                {% for message in messages %}
+                    <div class="flash flash-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        <main class="dashboard-main">
+            {% block content %}{% endblock %}
+        </main>
+        {% block page_scripts %}{% endblock %}
+    </body>
+</html>

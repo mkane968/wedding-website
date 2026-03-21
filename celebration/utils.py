@@ -221,6 +221,9 @@ def avatar_url(avatar_config: Dict[str, str], fallback_seed: str) -> str:
     else:
         params["accessories"] = accessories
         params["accessoriesProbability"] = "100"  # Ensure accessories appear when selected
+        params["accessoriesColor"] = ACCESSORIES_COLORS.get(
+            avatar_config.get("accessoriesColor"), ACCESSORIES_COLORS["black"]
+        )
     
     query = urlencode(params, doseq=True)
     return f"{DICEBEAR_BASE}/avataaars/svg?{query}"
@@ -245,6 +248,8 @@ def build_seating_chart(responses: Iterable[RSVP], seats_per_row: int = None) ->
                 "hairStyle": "short",
                 "outfit": "lavender",
                 "accent": "floral",
+                "accessories": "glasses",
+                "accessoriesColor": "black",
                 "signature": response.guest.full_name.strip() or "guest-avatar",
             }]
         
