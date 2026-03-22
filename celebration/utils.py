@@ -229,7 +229,12 @@ def avatar_url(avatar_config: Dict[str, str], fallback_seed: str) -> str:
     return f"{DICEBEAR_BASE}/avataaars/svg?{query}"
 
 
-def build_seating_chart(responses: Iterable[RSVP], seats_per_row: int = None) -> List[dict]:
+def build_seating_chart(
+    responses: Iterable[RSVP],
+    seats_per_row: int = None,
+    max_seats: int | None = None,
+    max_seats_per_rsvp: int | None = None,
+) -> List[dict]:
     row_names = ["A", "B", "C", "D", "E", "F"]
     seating_plan: List[dict] = []
 
@@ -253,6 +258,9 @@ def build_seating_chart(responses: Iterable[RSVP], seats_per_row: int = None) ->
                 "signature": response.guest.full_name.strip() or "guest-avatar",
             }]
         
+        if max_seats_per_rsvp is not None:
+            avatar_configs = avatar_configs[:max_seats_per_rsvp]
+
         # Create one seat per avatar in the party
         for avatar_idx, avatar_config in enumerate(avatar_configs):
             # Calculate which row this seat belongs to
@@ -286,5 +294,7 @@ def build_seating_chart(responses: Iterable[RSVP], seats_per_row: int = None) ->
                 }
             )
             seat_idx += 1
+            if max_seats is not None and len(seating_plan) >= max_seats:
+                return seating_plan
 
     return seating_plan

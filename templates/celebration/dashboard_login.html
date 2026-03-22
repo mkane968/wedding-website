@@ -1,10 +1,10 @@
 {% extends "celebration/dashboard_base.html" %}
 
-{% block title %}Log in{% endblock %}
+{% block title %}Log In{% endblock %}
 
 {% block content %}
 <div style="max-width: 380px; margin: 4rem auto; padding: 2rem; background: #fafafa; border-radius: 12px; border: 1px solid #e8e0e8;">
-    <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.75rem; margin: 0 0 1.5rem 0; color: #2b2b2b;">Log in to RSVP Dashboard</h2>
+    <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.75rem; margin: 0 0 1.5rem 0; color: #2b2b2b;">Log In to RSVP Dashboard</h2>
     <p style="color: #666; font-size: 0.95rem; margin-bottom: 1.5rem;">Use your admin account (same as Django admin).</p>
     <form method="post" action="{% url 'dashboard-login' %}">
         {% csrf_token %}
@@ -27,7 +27,7 @@
             </ul>
         {% endif %}
         <button type="submit" style="width: 100%; padding: 0.75rem; background: #4c2a4f; color: white; border: none; border-radius: 6px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; cursor: pointer;">
-            Log in
+            Log In
         </button>
     </form>
 </div>

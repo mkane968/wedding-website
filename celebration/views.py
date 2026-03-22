@@ -344,13 +344,21 @@ def avatar_customization_view(request, rsvp_id):
 def chapel_view(request):
     """Chapel page - displays interactive 3D seating chart."""
     # Get only the 30 most recent RSVPs
-    attending_rsvps = RSVP.objects.filter(attending=True).select_related("guest").order_by("-created_at")[:30]
+    attending_rsvps = (
+        RSVP.objects.filter(attending=True)
+        .select_related("guest")
+        .order_by("-created_at")[:30]
+    )
     
     # Build seating chart from RSVPs
-    seating = build_seating_chart(attending_rsvps)
+    seating = build_seating_chart(
+        attending_rsvps,
+        max_seats=30,
+        max_seats_per_rsvp=1,
+    )
     
     # Count attendees
-    attendee_count = sum(rsvp.party_size for rsvp in attending_rsvps)
+    attendee_count = len(seating)
     
     # Get current user's RSVP ID from URL parameter or use most recent
     current_rsvp_id = request.GET.get('rsvp_id')
@@ -391,23 +399,67 @@ def registry_view(request):
         {"amazon_registry_url": amazon_registry_url},
     )
 
-
 def details_view(request):
-    """Details page - coming soon placeholder."""
-    return render(
-        request,
-        "celebration/coming_soon.html",
-        {"page_title": "Details"},
-    )
+    itinerary = [
+        {
+            "time": "3:00 PM",
+            "title": "Wedding Ceremony",
+            "location": "Proclamation Presbyterian Church",
+            "address_lines": ["278 S Bryn Mawr Ave", "Bryn Mawr, PA"],
+        },
+        {
+            "time": "5:00 PM",
+            "title": "Cocktail Hour",
+            "location": "Kings Mills",
+            "address_lines": ["6000 Pennell Rd", "Media, PA"],
+        },
+        {
+            "time": "6-10 p.m.",
+            "title": "Reception",
+            "location": "Kings Mills",
+            "address_lines": ["6000 Pennell Rd", "Media, PA"],
+            "note": (
+                "We welcome you to enjoy an evening of dinner and dancing! We will be serving a buffet "
+                "with entree choices of roast beef, chicken marsala, and baked ziti. Chicken fingers and "
+                "fries will be available for kids 9 and under."
+            ),
+        },
+    ]
+    wedding_party = {
+        "brides_side": [
+            "Alison Kane (Maid of Honor)",
+            "Hayley Kane",
+            "Kiera Lucash",
+            "Becca Capitao",
+            "Stephanie Patterson",
+            "Elizabeth Reth",
+        ],
+        "grooms_side": [
+            "Michael Malkowicz (Best Man)",
+            "Ryan Simms",
+            "Rob Lowry",
+            "Matthew Andraka",
+        ],
+    }
+    context = {
+        "date_label": "Saturday, June 13, 2026",
+        "itinerary": itinerary,
+        "wedding_party": wedding_party,
+    }
+    return render(request, "celebration/details.html", context)
 
 
 def travel_view(request):
-    """Travel page - coming soon placeholder."""
-    return render(
-        request,
-        "celebration/coming_soon.html",
-        {"page_title": "Travel"},
-    )
+    hotel_block = {
+        "name": "Hilton hotel block",
+        "booking_url": (
+            "https://www.hilton.com/en/book/reservation/rooms/?ctyhocn=PHLTSGI&arrivalDate=2026-06-12"
+            "&departureDate=2026-06-14&groupCode=KAN&room1NumAdults=1&cid=OM%2CWW%2CHILTONLINK%2CEN%2CDirectLink"
+        ),
+        "contact_phone": "5709054477",
+        "contact_phone_display": "(570) 905-4477",
+    }
+    return render(request, "celebration/travel.html", {"hotel_block": hotel_block})
 
 
 def wedding_party_view(request):

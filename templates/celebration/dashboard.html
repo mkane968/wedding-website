@@ -30,7 +30,7 @@
 
 {% if meal_breakdown %}
 <div style="margin-bottom: 2rem;">
-    <h3 style="font-size: 1.2rem; margin: 0 0 0.75rem 0; color: #444;">Meal choices (attending)</h3>
+    <h3 style="font-size: 1.2rem; margin: 0 0 0.75rem 0; color: #444;">Meal Choices (Attending)</h3>
     <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.75rem;">
         {% for m in meal_breakdown %}
         <li style="background: #f0ebf0; padding: 0.5rem 1rem; border-radius: 8px;">{{ m.label }}: <strong>{{ m.count }}</strong></li>
