@@ -445,6 +445,7 @@ def details_view(request):
         "date_label": "Saturday, June 13, 2026",
         "itinerary": itinerary,
         "wedding_party": wedding_party,
+        "show_wedding_party": False,
     }
     return render(request, "celebration/details.html", context)
 
