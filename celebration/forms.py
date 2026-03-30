@@ -65,10 +65,26 @@ class RSVPForm(forms.Form):
         widget=forms.RadioSelect,
     )
     party_size = forms.IntegerField(
+        label="Party Size",
         min_value=1,
         max_value=6,
         initial=1,
-        help_text="Include yourself plus any guests listed on your invitation.",
+        help_text="(Include yourself and all others from your invitation who will attend)",
+    )
+    guest_names_json = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput(),
+    )
+    dietary_restrictions = forms.CharField(
+        required=False,
+        label="Dietary Restrictions / Allergies",
+        help_text="",
+        widget=forms.Textarea(
+            attrs={
+                "rows": 4,
+                "placeholder": "",
+            }
+        ),
     )
 
 

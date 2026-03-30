@@ -12,6 +12,7 @@ urlpatterns = [
     path("rsvp/<int:rsvp_id>/thank-you/", views.rsvp_thank_you_view, name="rsvp-thank-you"),
     path("rsvp/<int:rsvp_id>/avatars/", views.avatar_customization_view, name="avatar-customization"),
     path("api/guests/search/", views.guest_search_view, name="guest-search"),
+    path("api/rsvp/status/", views.rsvp_status_view, name="rsvp-status"),
     path("chapel/", views.chapel_view, name="chapel"),
     path("livestream/", views.livestream_view, name="livestream"),
     path("registry/", views.registry_view, name="registry"),

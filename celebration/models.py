@@ -70,6 +70,7 @@ class RSVP(models.Model):
     )
     attending = models.BooleanField()
     party_size = models.PositiveIntegerField(default=1)
+    guest_names = models.JSONField(default=list, blank=True)
     email = models.EmailField()
     meal_preference = models.CharField(
         max_length=32,

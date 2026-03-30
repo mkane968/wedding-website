@@ -17,9 +17,14 @@
                 <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin: 0.5rem 0;">
                     <strong>Party Size:</strong> {{ rsvp.party_size }}
                 </p>
+                {% if rsvp.guest_names %}
+                <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin: 0.5rem 0;">
+                    <strong>Who's Coming:</strong> {{ rsvp.guest_names|join:", " }}
+                </p>
+                {% endif %}
                 {% if rsvp.message %}
                 <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin: 0.5rem 0;">
-                    <strong>Your Note:</strong> {{ rsvp.message }}
+                    <strong>Dietary Restrictions / Allergies:</strong> {{ rsvp.message }}
                 </p>
                 {% endif %}
             </div>
@@ -28,6 +33,9 @@
         <div style="display: grid; gap: 2rem;">
             <div>
                 <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.8rem; font-weight: 400; margin: 0 0 1rem 0; color: #2b2b2b;">Change Your RSVP</h2>
+                <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.05rem; color: #6b6b6b; margin: 0 0 1.25rem 0; line-height: 1.6;">
+                    If you update your RSVP, please also email us at <a href="mailto:mksmwedding2026@gmail.com" style="color: #4c2a4f; text-decoration: underline;">mksmwedding2026@gmail.com</a> so we can double-check we have the correct response.
+                </p>
                 <form method="post" style="display: grid; gap: 1.5rem; text-align: left;">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="change">
@@ -61,12 +69,27 @@
                     </div>
                     
                     <div>
-                        <label for="message" style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Add a Note (Optional)</label>
+                        <label for="guest_name_existing_1" style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Who's Coming?</label>
+                        <div id="guest-names-fields-existing" style="display: grid; gap: 0.75rem;"></div>
+                        <div id="guest-names-error-existing" style="display: none; color: #d32f2f; font-size: 0.9rem; margin-top: 0.5rem;">
+                            Please enter a name for each person in your party.
+                        </div>
+                        <input type="hidden" id="guest_names_json_existing" name="guest_names_json" value="">
+                        {{ rsvp.guest_names|json_script:"existing-guest-names" }}
+                        <p style="font-size: 0.9rem; color: #6b6b6b; margin: 0.5rem 0 0 0;">
+                            Please enter each guest's name, as you would like it to appear on our seating chart.
+                        </p>
+                    </div>
+
+                    <div>
+                        <label for="message" style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">
+                            Please let us know of any allergies or dietary restrictions. Buffet entrées include roast beef, chicken marsala, and baked ziti. Kids chicken fingers &amp; fries (9 and under).
+                        </label>
                         <textarea 
                             id="message" 
                             name="message" 
                             rows="4"
-                            placeholder="Any special requests or notes for us..."
+                            placeholder=""
                             style="width: 100%; padding: 0.75rem; border: 1px solid #d0d0d0; border-radius: 4px; font-family: system-ui, -apple-system, sans-serif; font-size: 1rem; background: white; resize: vertical;"
                         >{{ rsvp.message }}</textarea>
                     </div>
@@ -90,4 +113,68 @@
         </div>
     </div>
 </section>
+
+<script>
+(function() {
+    const partySizeInput = document.getElementById('party_size');
+    const fields = document.getElementById('guest-names-fields-existing');
+    const jsonField = document.getElementById('guest_names_json_existing');
+    const errorEl = document.getElementById('guest-names-error-existing');
+    const form = document.querySelector('form input[name=\"action\"][value=\"change\"]')?.closest('form');
+
+    let initialNames = [];
+    const initialEl = document.getElementById('existing-guest-names');
+    if (initialEl) {
+        try { initialNames = JSON.parse(initialEl.textContent) || []; } catch (e) { initialNames = []; }
+    }
+
+    function getPartySize() {
+        const raw = parseInt(partySizeInput?.value || '1', 10);
+        if (Number.isNaN(raw) || raw < 1) return 1;
+        return raw;
+    }
+
+    function render() {
+        if (!fields) return;
+        const count = getPartySize();
+        const existing = Array.from(fields.querySelectorAll('input')).map((el) => el.value);
+        fields.innerHTML = '';
+
+        for (let i = 1; i <= count; i++) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = `guest_name_existing_${i}`;
+            input.id = `guest_name_existing_${i}`;
+            input.placeholder = 'Guest Name';
+            input.value = existing[i - 1] || initialNames[i - 1] || '';
+            fields.appendChild(input);
+        }
+        if (errorEl) errorEl.style.display = 'none';
+    }
+
+    function syncAndValidate(e) {
+        if (!fields || !jsonField) return;
+        const count = getPartySize();
+        const names = Array.from(fields.querySelectorAll('input')).map((el) => (el.value || '').trim());
+        const valid = names.length === count && names.every((n) => n.length > 0);
+        if (!valid) {
+            e.preventDefault();
+            if (errorEl) errorEl.style.display = 'block';
+            const firstEmpty = Array.from(fields.querySelectorAll('input')).find((el) => !(el.value || '').trim());
+            if (firstEmpty) firstEmpty.focus();
+            return;
+        }
+        jsonField.value = JSON.stringify(names);
+    }
+
+    if (partySizeInput) {
+        partySizeInput.addEventListener('input', render);
+        partySizeInput.addEventListener('change', render);
+    }
+    if (form) {
+        form.addEventListener('submit', syncAndValidate);
+    }
+    render();
+})();
+</script>
 {% endblock %}

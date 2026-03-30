@@ -8,6 +8,7 @@ from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+import json
 
 from .forms import PhotoUploadForm, RSVPForm
 from .models import Guest, PhotoSubmission, RSVP
@@ -142,7 +143,26 @@ def rsvp_view(request):
             
             attendance = rsvp_form.cleaned_data["attendance_choice"] == "yes"
             email = rsvp_form.cleaned_data.get("email", "") or guest.email
+            dietary_restrictions = (rsvp_form.cleaned_data.get("dietary_restrictions") or "").strip()
             party_size = rsvp_form.cleaned_data["party_size"]
+
+            if attendance:
+                guest_names: list[str] = []
+                raw_guest_names = (rsvp_form.cleaned_data.get("guest_names_json") or "").strip()
+                if raw_guest_names:
+                    try:
+                        parsed = json.loads(raw_guest_names)
+                        if isinstance(parsed, list):
+                            guest_names = [str(x).strip() for x in parsed]
+                    except json.JSONDecodeError:
+                        guest_names = []
+                guest_names = [name for name in guest_names if name]
+                if len(guest_names) != party_size:
+                    messages.error(request, "Please enter a name for each person in your party.")
+                    return render(request, "celebration/rsvp.html", {"rsvp_form": rsvp_form})
+            else:
+                party_size = 1
+                guest_names = [guest.full_name]
             
             # Create default avatar configs (one per party member)
             default_config = {
@@ -162,10 +182,11 @@ def rsvp_view(request):
                 defaults={
                     "attending": attendance,
                     "party_size": party_size,
+                    "guest_names": guest_names,
                     "email": email,
                     "meal_preference": "",
                     "song_request": "",
-                    "message": "",
+                    "message": dietary_restrictions,
                     "avatar_config": avatar_configs,
                     "livestream_requested": not attendance,
                 },
@@ -201,7 +222,21 @@ def rsvp_existing_view(request, rsvp_id):
             # Update RSVP with new values
             attendance = request.POST.get("attendance_choice") == "yes"
             party_size = int(request.POST.get("party_size", 1))
-            message = request.POST.get("message", "")
+            dietary_restrictions = (request.POST.get("message", "") or "").strip()
+
+            guest_names: list[str] = []
+            raw_guest_names = (request.POST.get("guest_names_json", "") or "").strip()
+            if raw_guest_names:
+                try:
+                    parsed = json.loads(raw_guest_names)
+                    if isinstance(parsed, list):
+                        guest_names = [str(x).strip() for x in parsed]
+                except json.JSONDecodeError:
+                    guest_names = []
+            guest_names = [name for name in guest_names if name]
+            if guest_names and len(guest_names) != party_size:
+                messages.error(request, "Please enter a name for each person in your party.")
+                return redirect("rsvp-existing", rsvp_id=rsvp.id)
             
             # Update avatar configs if party size changed
             if party_size != rsvp.party_size:
@@ -220,7 +255,9 @@ def rsvp_existing_view(request, rsvp_id):
             
             rsvp.attending = attendance
             rsvp.party_size = party_size
-            rsvp.message = message
+            rsvp.message = dietary_restrictions
+            if guest_names:
+                rsvp.guest_names = guest_names
             rsvp.livestream_requested = not attendance
             rsvp.save()
             
@@ -528,6 +565,30 @@ def guest_search_view(request):
     ]
     
     return JsonResponse({"guests": results})
+
+
+def rsvp_status_view(request):
+    """API endpoint to check if a guest already has an RSVP."""
+    guest_id = (request.GET.get("guest_id") or "").strip()
+    if not guest_id.isdigit():
+        return JsonResponse({"exists": False})
+
+    guest = Guest.objects.filter(id=int(guest_id)).first()
+    if not guest:
+        return JsonResponse({"exists": False})
+
+    existing_rsvp = RSVP.objects.filter(guest=guest).order_by("-created_at").first()
+    if not existing_rsvp:
+        return JsonResponse({"exists": False})
+
+    return JsonResponse(
+        {
+            "exists": True,
+            "rsvp_id": existing_rsvp.id,
+            "attending": bool(existing_rsvp.attending),
+            "party_size": int(existing_rsvp.party_size),
+        }
+    )
 
 
 # --- Dashboard (custom admin panel for RSVP tracking) ---

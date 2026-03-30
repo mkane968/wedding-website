@@ -4,14 +4,16 @@
 {% block content %}
 <section class="rsvp-page">
     <div style="text-align: center; padding: 4rem 2rem; max-width: 900px; margin: 0 auto;">
-        <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 3rem; font-weight: 400; margin: 0 0 2rem 0; color: #2b2b2b; letter-spacing: 0.02em;">RSVP</h1>
+        <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 3rem; font-weight: 400; margin: 0 0 0.75rem 0; color: #2b2b2b; letter-spacing: 0.02em;">Find Your Invitation</h1>
+        <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.25rem; color: #6b6b6b; margin: 0 0 2rem 0; line-height: 1.6;">
+            Search for the name(s) on the invitation you received to begin your RSVP.
+        </p>
         
         <form method="post" novalidate style="display: grid; gap: 2rem;" id="rsvp-form">
             {% csrf_token %}
             
             <div style="display: grid; gap: 1.5rem;">
                 <div>
-                    <label for="guest-search" style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Find Your Invitation</label>
                     <div style="position: relative;">
                         <input 
                             type="text" 
@@ -30,10 +32,26 @@
                     <div id="guest-search-error" style="display: none; color: #d32f2f; font-size: 0.9rem; margin-top: 0.5rem;">Please select your name from the search results.</div>
                     {{ rsvp_form.guest_id.errors }}
                 </div>
+
+                <div id="existing-rsvp-panel" style="display: none; text-align: left; background: #f7f1ee; border: 1px solid rgba(76, 42, 79, 0.18); border-radius: 10px; padding: 1.25rem 1.25rem;">
+                    <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.7rem; font-weight: 500; margin: 0 0 0.5rem 0; color: #2b2b2b;">We Already Have an RSVP for This Invitation</h2>
+                    <p id="existing-rsvp-summary" style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin: 0 0 1rem 0; line-height: 1.6;"></p>
+                    <a id="existing-rsvp-change-link" href="#" style="display: inline-block; padding: 0.85rem 1.5rem; background: #4c2a4f; color: white; border-radius: 8px; text-decoration: none; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem;">
+                        Change My RSVP
+                    </a>
+                    <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; color: #6b6b6b; margin: 0.75rem 0 0 0; line-height: 1.6;">
+                        If you update your RSVP, please also email us at <a href="mailto:mksmwedding2026@gmail.com" style="color: #4c2a4f; text-decoration: underline;">mksmwedding2026@gmail.com</a> so we can double-check we have the correct response.
+                    </p>
+                </div>
                 
-                <div>
-                    {{ rsvp_form.attendance_choice.label_tag }}
-                    <div style="display: flex; gap: 2rem; justify-content: center; margin-top: 0.5rem;">
+                <div id="step-attendance" style="display: none;">
+                    <div style="text-align: left;">
+                        <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.8rem; font-weight: 500; margin: 0 0 0.75rem 0; color: #2b2b2b;">Attending?</h2>
+                        <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #6b6b6b; margin: 0 0 1rem 0; line-height: 1.6;">
+                            Let us know if you’ll be joining us in person.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 2rem; justify-content: center;">
                         {% for choice in rsvp_form.attendance_choice %}
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
                                 {{ choice.tag }}
@@ -43,21 +61,50 @@
                     </div>
                     {{ rsvp_form.attendance_choice.errors }}
                 </div>
-                
-                <div>
+
+                <div id="step-attending-details" style="display: none;">
+                    <div style="text-align: left;">
+                        <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.8rem; font-weight: 500; margin: 0 0 0.75rem 0; color: #2b2b2b;">Party Details</h2>
+                        <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #6b6b6b; margin: 0 0 1rem 0; line-height: 1.6;">
+                            Tell us who’s coming and any dietary restrictions.
+                        </p>
+                    </div>
+
                     {{ rsvp_form.party_size.label_tag }}
                     {{ rsvp_form.party_size }}
                     {{ rsvp_form.party_size.errors }}
                     {% if rsvp_form.party_size.help_text %}
                         <p style="font-size: 0.9rem; color: #6b6b6b; margin: 0.5rem 0 0 0;">{{ rsvp_form.party_size.help_text }}</p>
                     {% endif %}
+
+                    <div style="margin-top: 1.25rem;">
+                        <label for="guest_name_1" style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Who's Coming?</label>
+                        <div id="guest-names-fields" style="display: grid; gap: 0.75rem;"></div>
+                        <div id="guest-names-error" style="display: none; color: #d32f2f; font-size: 0.9rem; margin-top: 0.5rem;">
+                            Please enter a name for each person in your party.
+                        </div>
+                        {{ rsvp_form.guest_names_json }}
+                        <p style="font-size: 0.9rem; color: #6b6b6b; margin: 0.5rem 0 0 0;">
+                            Please enter each guest's name, as you would like it to appear on our seating chart.
+                        </p>
+                    </div>
+
+                    <div style="margin-top: 1.25rem;">
+                        <label for="id_dietary_restrictions" style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">
+                            Please let us know of any allergies or dietary restrictions. Buffet entrées include roast beef, chicken marsala, and baked ziti. Kids chicken fingers &amp; fries (9 and under).
+                        </label>
+                        {{ rsvp_form.dietary_restrictions }}
+                        {{ rsvp_form.dietary_restrictions.errors }}
+                    </div>
                 </div>
             </div>
             
-            <div style="text-align: center; padding-top: 2rem;">
+            <div id="step-submit" style="display: none; text-align: center; padding-top: 1.25rem;">
                 <button type="submit" id="submit-btn" style="padding: 1rem 3rem; background: #4c2a4f; color: white; border: none; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; cursor: pointer;">Submit RSVP</button>
             </div>
         </form>
+
+        <img src="{% static 'rose-border-2.png' %}" alt="Floral border" style="max-width: 800px; width: 100%; height: auto; display: block; margin: 3rem auto 0; transform: rotate(180deg);" />
     </div>
 </section>
 
@@ -71,7 +118,81 @@
     const clearSelectionBtn = document.getElementById('clear-selection');
     const errorDiv = document.getElementById('guest-search-error');
     const form = document.getElementById('rsvp-form');
+    const stepAttendance = document.getElementById('step-attendance');
+    const stepAttendingDetails = document.getElementById('step-attending-details');
+    const stepSubmit = document.getElementById('step-submit');
+    const submitBtn = document.getElementById('submit-btn');
+    const attendanceInputs = Array.from(document.querySelectorAll('input[name=\"attendance_choice\"]'));
+    const existingRsvpPanel = document.getElementById('existing-rsvp-panel');
+    const existingRsvpSummary = document.getElementById('existing-rsvp-summary');
+    const existingRsvpChangeLink = document.getElementById('existing-rsvp-change-link');
+    const partySizeInput = document.getElementById('id_party_size');
+    const guestNamesFields = document.getElementById('guest-names-fields');
+    const guestNamesJsonField = document.getElementById('id_guest_names_json');
+    const guestNamesError = document.getElementById('guest-names-error');
     let searchTimeout = null;
+    let hasExistingRsvp = false;
+
+    function selectedAttendance() {
+        const checked = attendanceInputs.find((el) => el.checked);
+        return checked ? checked.value : null;
+    }
+
+    function show(el, shouldShow) {
+        if (!el) return;
+        el.style.display = shouldShow ? '' : 'none';
+    }
+
+    function syncSteps() {
+        const hasGuest = !!(guestIdField && guestIdField.value);
+        const attendance = selectedAttendance();
+        const isAttending = attendance === 'yes';
+        const isNotAttending = attendance === 'no';
+
+        show(existingRsvpPanel, hasGuest && hasExistingRsvp);
+        show(stepAttendance, hasGuest && !hasExistingRsvp);
+        show(stepAttendingDetails, hasGuest && !hasExistingRsvp && isAttending);
+        show(stepSubmit, hasGuest && !hasExistingRsvp && (isAttending || isNotAttending));
+
+        if (submitBtn) {
+            submitBtn.textContent = isNotAttending ? 'RSVP' : 'Submit RSVP';
+        }
+
+        if (partySizeInput && isNotAttending) {
+            partySizeInput.value = '1';
+        }
+    }
+
+    function getPartySize() {
+        const raw = parseInt(partySizeInput.value || '1', 10);
+        if (Number.isNaN(raw) || raw < 1) return 1;
+        return raw;
+    }
+
+    function renderGuestNameFields() {
+        if (!guestNamesFields) return;
+        if (selectedAttendance() !== 'yes') {
+            guestNamesFields.innerHTML = '';
+            if (guestNamesError) guestNamesError.style.display = 'none';
+            return;
+        }
+
+        const count = getPartySize();
+        const existing = Array.from(guestNamesFields.querySelectorAll('input')).map((el) => el.value);
+        guestNamesFields.innerHTML = '';
+
+        for (let i = 1; i <= count; i++) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = `guest_name_${i}`;
+            input.id = `guest_name_${i}`;
+            input.placeholder = 'Guest Name';
+            input.value = existing[i - 1] || '';
+            guestNamesFields.appendChild(input);
+        }
+
+        if (guestNamesError) guestNamesError.style.display = 'none';
+    }
 
     function performSearch(query) {
         if (query.length < 2) {
@@ -128,6 +249,7 @@
         searchInput.style.display = 'none';
         resultsDiv.style.display = 'none';
         errorDiv.style.display = 'none';
+        checkExistingRsvp(guestId);
     }
 
     function clearSelection() {
@@ -136,6 +258,10 @@
         searchInput.style.display = 'block';
         searchInput.value = '';
         resultsDiv.style.display = 'none';
+        attendanceInputs.forEach((el) => { el.checked = false; });
+        hasExistingRsvp = false;
+        syncSteps();
+        renderGuestNameFields();
     }
 
     searchInput.addEventListener('input', function() {
@@ -167,8 +293,80 @@
             searchInput.style.display = 'block';
             selectedGuestDiv.style.display = 'none';
             searchInput.focus();
+            return;
+        }
+
+        const attendance = selectedAttendance();
+        if (!attendance) {
+            e.preventDefault();
+            return;
+        }
+
+        if (guestNamesFields && guestNamesJsonField) {
+            if (attendance === 'yes') {
+                const count = getPartySize();
+                const names = Array.from(guestNamesFields.querySelectorAll('input')).map((el) => (el.value || '').trim());
+                const valid = names.length === count && names.every((n) => n.length > 0);
+
+                if (!valid) {
+                    e.preventDefault();
+                    if (guestNamesError) guestNamesError.style.display = 'block';
+                    const firstEmpty = Array.from(guestNamesFields.querySelectorAll('input')).find((el) => !(el.value || '').trim());
+                    if (firstEmpty) firstEmpty.focus();
+                    return;
+                }
+
+                guestNamesJsonField.value = JSON.stringify(names);
+            } else {
+                const name = (selectedGuestName.textContent || '').trim();
+                guestNamesJsonField.value = JSON.stringify([name || 'Guest']);
+                if (partySizeInput) partySizeInput.value = '1';
+            }
         }
     });
+
+    if (partySizeInput) {
+        partySizeInput.addEventListener('input', renderGuestNameFields);
+        partySizeInput.addEventListener('change', renderGuestNameFields);
+    }
+    attendanceInputs.forEach((el) => el.addEventListener('change', function() {
+        syncSteps();
+        renderGuestNameFields();
+    }));
+    syncSteps();
+    renderGuestNameFields();
+
+    function checkExistingRsvp(guestId) {
+        hasExistingRsvp = false;
+        syncSteps();
+        renderGuestNameFields();
+
+        fetch(`{% url 'rsvp-status' %}?guest_id=${encodeURIComponent(guestId)}`)
+            .then((res) => res.json())
+            .then((data) => {
+                if (!data || !data.exists) {
+                    hasExistingRsvp = false;
+                    syncSteps();
+                    renderGuestNameFields();
+                    return;
+                }
+
+                hasExistingRsvp = true;
+                if (existingRsvpSummary) {
+                    const status = data.attending ? 'Attending' : 'Unable to Attend';
+                    existingRsvpSummary.textContent = `Status: ${status} • Party Size: ${data.party_size}`;
+                }
+                if (existingRsvpChangeLink && data.rsvp_id) {
+                    existingRsvpChangeLink.href = `{% url 'rsvp-existing' 0 %}`.replace('/0/', `/${data.rsvp_id}/`);
+                }
+                syncSteps();
+            })
+            .catch(() => {
+                hasExistingRsvp = false;
+                syncSteps();
+                renderGuestNameFields();
+            });
+    }
 })();
 </script>
 
