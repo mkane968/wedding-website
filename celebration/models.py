@@ -11,7 +11,7 @@ def default_avatar_config() -> list:
     return [{
         "skin": "porcelain",
         "hair": "espresso",
-        "hairStyle": "short",
+        "hairStyle": "longButNotTooLong",
         "outfit": "lavender",
         "accent": "floral",
         "accessories": "glasses",

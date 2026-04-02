@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 from django import forms
 
 from .models import PhotoSubmission
@@ -69,7 +71,7 @@ class RSVPForm(forms.Form):
         min_value=1,
         max_value=6,
         initial=1,
-        help_text="(Include yourself and all others from your invitation who will attend)",
+        help_text="Include yourself and all others from your invitation who will attend",
     )
     guest_names_json = forms.CharField(
         required=False,
@@ -86,6 +88,38 @@ class RSVPForm(forms.Form):
             }
         ),
     )
+
+    def clean(self):
+        cleaned = super().clean()
+        attendance = cleaned.get("attendance_choice")
+        party_size = cleaned.get("party_size")
+        raw_guest_names = (cleaned.get("guest_names_json") or "").strip()
+
+        if attendance != "yes":
+            return cleaned
+
+        if not party_size:
+            return cleaned
+
+        if not raw_guest_names:
+            self.add_error("guest_names_json", "Please enter a name for each person in your party.")
+            return cleaned
+
+        try:
+            parsed = json.loads(raw_guest_names)
+        except json.JSONDecodeError:
+            self.add_error("guest_names_json", "Please enter a name for each person in your party.")
+            return cleaned
+
+        if not isinstance(parsed, list):
+            self.add_error("guest_names_json", "Please enter a name for each person in your party.")
+            return cleaned
+
+        names = [str(x).strip() for x in parsed if str(x).strip()]
+        if len(names) != party_size:
+            self.add_error("guest_names_json", "Please enter a name for each person in your party.")
+
+        return cleaned
 
 
 class PhotoUploadForm(forms.ModelForm):

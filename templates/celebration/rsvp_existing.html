@@ -4,6 +4,7 @@
 {% block content %}
 <section class="rsvp-page">
     <div style="text-align: center; padding: 4rem 2rem; max-width: 900px; margin: 0 auto;">
+        <img src="{% static 'rose-border-2.png' %}" alt="Floral border" style="max-width: 800px; width: 100%; height: auto; display: block; margin: 0 auto 2rem;" />
         <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 3rem; font-weight: 400; margin: 0 0 2rem 0; color: #2b2b2b; letter-spacing: 0.02em;">You Already RSVP'd</h1>
         
         <div style="background: #f7f1ee; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
@@ -41,7 +42,7 @@
                     <input type="hidden" name="action" value="change">
                     
                     <div>
-                        <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Will you be attending?</label>
+                        <div style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.35rem; font-weight: 600; margin: 0 0 0.5rem 0; color: #2b2b2b;">Will You Be Attending?</div>
                         <div style="display: flex; gap: 2rem; justify-content: center;">
                             <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                                 <input type="radio" name="attendance_choice" value="yes" {% if rsvp.attending %}checked{% endif %}>
@@ -53,9 +54,10 @@
                             </label>
                         </div>
                     </div>
-                    
-                    <div>
-                        <label for="party_size" style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Party Size</label>
+
+                    <div id="attending-details-existing">
+                    <div style="margin-top: 1.25rem;">
+                        <label for="party_size" style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.35rem; font-weight: 600; margin: 0 0 0.5rem 0; color: #2b2b2b;">Party Size</label>
                         <input 
                             type="number" 
                             id="party_size" 
@@ -68,23 +70,28 @@
                         >
                     </div>
                     
-                    <div>
-                        <label for="guest_name_existing_1" style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Who's Coming?</label>
+                    <div style="margin-top: 1.5rem;">
+                        <h3 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.35rem; font-weight: 600; margin: 0 0 0.5rem 0; color: #2b2b2b;">
+                            Who's Coming?
+                        </h3>
+                        <p style="font-size: 0.95rem; color: #6b6b6b; margin: 0.25rem 0 0.75rem 0;">
+                            Please enter each guest's name, as you would like it to appear on our seating chart.
+                        </p>
                         <div id="guest-names-fields-existing" style="display: grid; gap: 0.75rem;"></div>
                         <div id="guest-names-error-existing" style="display: none; color: #d32f2f; font-size: 0.9rem; margin-top: 0.5rem;">
                             Please enter a name for each person in your party.
                         </div>
                         <input type="hidden" id="guest_names_json_existing" name="guest_names_json" value="">
                         {{ rsvp.guest_names|json_script:"existing-guest-names" }}
-                        <p style="font-size: 0.9rem; color: #6b6b6b; margin: 0.5rem 0 0 0;">
-                            Please enter each guest's name, as you would like it to appear on our seating chart.
-                        </p>
                     </div>
 
-                    <div>
-                        <label for="message" style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">
+                    <div style="margin-top: 1.5rem;">
+                        <h3 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.35rem; font-weight: 600; margin: 0 0 0.5rem 0; color: #2b2b2b;">
+                            Allergies and Dietary Restrictions
+                        </h3>
+                        <p style="font-size: 0.95rem; color: #6b6b6b; margin: 0.25rem 0 0.75rem 0;">
                             Please let us know of any allergies or dietary restrictions. Buffet entrées include roast beef, chicken marsala, and baked ziti. Kids chicken fingers &amp; fries (9 and under).
-                        </label>
+                        </p>
                         <textarea 
                             id="message" 
                             name="message" 
@@ -92,6 +99,7 @@
                             placeholder=""
                             style="width: 100%; padding: 0.75rem; border: 1px solid #d0d0d0; border-radius: 4px; font-family: system-ui, -apple-system, sans-serif; font-size: 1rem; background: white; resize: vertical;"
                         >{{ rsvp.message }}</textarea>
+                    </div>
                     </div>
                     
                     <button type="submit" style="padding: 1rem 3rem; background: #4c2a4f; color: white; border: none; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; cursor: pointer; justify-self: center;">Update RSVP</button>
@@ -104,7 +112,7 @@
                     {% csrf_token %}
                     <input type="hidden" name="action" value="keep">
                     {% if rsvp.attending %}
-                        <button type="submit" style="padding: 1rem 3rem; background: #4c2a4f; color: white; border: none; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; cursor: pointer;">Go to Chapel</button>
+                        <button type="submit" style="padding: 1rem 3rem; background: #4c2a4f; color: white; border: none; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; cursor: pointer;">Visit Virtual Chapel</button>
                     {% else %}
                         <button type="submit" style="padding: 1rem 3rem; background: #4c2a4f; color: white; border: none; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; cursor: pointer;">Go to Livestream</button>
                     {% endif %}
@@ -114,13 +122,20 @@
     </div>
 </section>
 
+<div style="text-align: center; padding: 0 2rem 4rem; max-width: 900px; margin: 0 auto;">
+    <img src="{% static 'rose-border-2.png' %}" alt="Floral border" style="max-width: 800px; width: 100%; height: auto; display: block; margin: 2rem auto 0; transform: rotate(180deg);" />
+</div>
+
 <script>
 (function() {
+    const attendingDetails = document.getElementById('attending-details-existing');
     const partySizeInput = document.getElementById('party_size');
     const fields = document.getElementById('guest-names-fields-existing');
     const jsonField = document.getElementById('guest_names_json_existing');
     const errorEl = document.getElementById('guest-names-error-existing');
     const form = document.querySelector('form input[name=\"action\"][value=\"change\"]')?.closest('form');
+    const attendanceYes = document.querySelector('input[name=\"attendance_choice\"][value=\"yes\"]');
+    const attendanceNo = document.querySelector('input[name=\"attendance_choice\"][value=\"no\"]');
 
     let initialNames = [];
     const initialEl = document.getElementById('existing-guest-names');
@@ -134,8 +149,32 @@
         return raw;
     }
 
+    function selectedAttendance() {
+        if (attendanceYes && attendanceYes.checked) return 'yes';
+        if (attendanceNo && attendanceNo.checked) return 'no';
+        return null;
+    }
+
+    function syncVisibility() {
+        const isAttending = selectedAttendance() === 'yes';
+        if (attendingDetails) attendingDetails.style.display = isAttending ? '' : 'none';
+        if (partySizeInput) {
+            partySizeInput.required = isAttending;
+            partySizeInput.disabled = !isAttending;
+            if (!isAttending) partySizeInput.value = '1';
+        }
+        if (!isAttending) {
+            if (fields) fields.innerHTML = '';
+            if (jsonField) jsonField.value = '';
+            if (errorEl) errorEl.style.display = 'none';
+        } else {
+            render();
+        }
+    }
+
     function render() {
         if (!fields) return;
+        if (selectedAttendance() !== 'yes') return;
         const count = getPartySize();
         const existing = Array.from(fields.querySelectorAll('input')).map((el) => el.value);
         fields.innerHTML = '';
@@ -146,6 +185,7 @@
             input.name = `guest_name_existing_${i}`;
             input.id = `guest_name_existing_${i}`;
             input.placeholder = 'Guest Name';
+            input.required = true;
             input.value = existing[i - 1] || initialNames[i - 1] || '';
             fields.appendChild(input);
         }
@@ -154,6 +194,7 @@
 
     function syncAndValidate(e) {
         if (!fields || !jsonField) return;
+        if (selectedAttendance() !== 'yes') return;
         const count = getPartySize();
         const names = Array.from(fields.querySelectorAll('input')).map((el) => (el.value || '').trim());
         const valid = names.length === count && names.every((n) => n.length > 0);
@@ -171,10 +212,12 @@
         partySizeInput.addEventListener('input', render);
         partySizeInput.addEventListener('change', render);
     }
+    if (attendanceYes) attendanceYes.addEventListener('change', syncVisibility);
+    if (attendanceNo) attendanceNo.addEventListener('change', syncVisibility);
     if (form) {
         form.addEventListener('submit', syncAndValidate);
     }
-    render();
+    syncVisibility();
 })();
 </script>
 {% endblock %}

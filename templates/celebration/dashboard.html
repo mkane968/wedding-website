@@ -19,8 +19,8 @@
         <div style="font-size: 0.95rem; opacity: 0.9;">Total guests (incl. +1s)</div>
     </div>
     <div style="background: #7a5f7d; color: #fff; padding: 1.25rem; border-radius: 10px; text-align: center;">
-        <div style="font-size: 2rem; font-weight: 600;">{{ livestream_count }}</div>
-        <div style="font-size: 0.95rem; opacity: 0.9;">Livestream only</div>
+        <div style="font-size: 2rem; font-weight: 600;">{{ not_attending_count }}</div>
+        <div style="font-size: 0.95rem; opacity: 0.9;">Not Attending</div>
     </div>
     <div style="background: #8a6f8d; color: #fff; padding: 1.25rem; border-radius: 10px; text-align: center;">
         <div style="font-size: 2rem; font-weight: 600;">{{ not_responded_count }}</div>
@@ -28,32 +28,43 @@
     </div>
 </div>
 
-{% if meal_breakdown %}
-<div style="margin-bottom: 2rem;">
-    <h3 style="font-size: 1.2rem; margin: 0 0 0.75rem 0; color: #444;">Meal Choices (Attending)</h3>
-    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.75rem;">
-        {% for m in meal_breakdown %}
-        <li style="background: #f0ebf0; padding: 0.5rem 1rem; border-radius: 8px;">{{ m.label }}: <strong>{{ m.count }}</strong></li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
-
 <details style="margin-bottom: 1.5rem; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
     <summary style="font-size: 1.35rem; font-weight: 500; color: #2b2b2b; padding: 0.75rem 1rem; cursor: pointer; background: #f5f0f5; list-style: none; display: flex; align-items: center; gap: 0.5rem;">
         <span style="font-size: 1rem;">▶</span> RSVPed guests <span style="font-weight: 400; color: #666; font-size: 1rem;">({{ total_rsvps }})</span>
     </summary>
     <div style="padding: 0 1rem 1rem;">
+        <form method="get" style="display: flex; gap: 0.75rem; align-items: center; padding: 1rem 0 0.25rem; flex-wrap: wrap;">
+            <label for="status-filter" style="font-size: 0.95rem; color: #555;">Filter Status</label>
+            <select id="status-filter" name="status" onchange="this.form.submit()" style="padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #d0d0d0;">
+                <option value="all" {% if status_filter == "all" %}selected{% endif %}>All</option>
+                <option value="attending" {% if status_filter == "attending" %}selected{% endif %}>Attending</option>
+                <option value="not_attending" {% if status_filter == "not_attending" %}selected{% endif %}>Not Attending</option>
+            </select>
+            <input type="hidden" name="sort" value="{{ sort }}">
+            <input type="hidden" name="dir" value="{{ dir }}">
+
+            <a href="{% url 'dashboard-export-rsvps' %}?status={{ status_filter }}&sort={{ sort }}&dir={{ dir }}"
+               style="margin-left: auto; padding: 0.55rem 0.9rem; border-radius: 8px; border: 1px solid rgba(76, 42, 79, 0.25); background: #fff; color: #4c2a4f; text-decoration: none; font-weight: 600;">
+                Download CSV
+            </a>
+        </form>
+
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse; font-size: 1rem;">
                 <thead>
                     <tr style="background: #4c2a4f; color: #fff;">
-                        <th style="text-align: left; padding: 0.75rem 1rem;">Guest</th>
-                        <th style="text-align: left; padding: 0.75rem 1rem;">Status</th>
+                        <th style="text-align: left; padding: 0.75rem 1rem;">
+                            <a href="?status={{ status_filter }}&sort=guest&dir={% if sort == 'guest' and dir == 'asc' %}desc{% else %}asc{% endif %}" style="color: #fff; text-decoration: underline;">Guest</a>
+                        </th>
+                        <th style="text-align: left; padding: 0.75rem 1rem;">Who's Coming</th>
+                        <th style="text-align: left; padding: 0.75rem 1rem;">
+                            <a href="?status={{ status_filter }}&sort=status&dir={% if sort == 'status' and dir == 'asc' %}desc{% else %}asc{% endif %}" style="color: #fff; text-decoration: underline;">Status</a>
+                        </th>
                         <th style="text-align: center; padding: 0.75rem 1rem;">Party</th>
-                        <th style="text-align: left; padding: 0.75rem 1rem;">Meal</th>
-                        <th style="text-align: left; padding: 0.75rem 1rem;">Date</th>
-                        <th style="text-align: left; padding: 0.75rem 1rem;">Message</th>
+                        <th style="text-align: left; padding: 0.75rem 1rem;">
+                            <a href="?status={{ status_filter }}&sort=date&dir={% if sort == 'date' and dir == 'asc' %}desc{% else %}asc{% endif %}" style="color: #fff; text-decoration: underline;">Date</a>
+                        </th>
+                        <th style="text-align: left; padding: 0.75rem 1rem;">Dietary Restrictions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,15 +74,21 @@
                             <strong>{{ r.guest.full_name }}</strong>
                             {% if r.guest.household_name %}<br><span style="font-size: 0.9rem; color: #666;">{{ r.guest.household_name }}</span>{% endif %}
                         </td>
+                        <td style="padding: 0.75rem 1rem; max-width: 260px;">
+                            {% if r.guest_names %}
+                                {{ r.guest_names|join:", " }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
                         <td style="padding: 0.75rem 1rem;">
                             {% if r.attending %}
                                 <span style="color: #2d7a3e; font-weight: 500;">Attending</span>
                             {% else %}
-                                <span style="color: #666;">Livestream</span>
+                                <span style="color: #666;">Not Attending</span>
                             {% endif %}
                         </td>
                         <td style="text-align: center; padding: 0.75rem 1rem;">{{ r.party_size }}</td>
-                        <td style="padding: 0.75rem 1rem;">{{ r.get_meal_preference_display|default:"—" }}</td>
                         <td style="padding: 0.75rem 1rem; white-space: nowrap;">{{ r.created_at|date:"M j, Y g:i A" }}</td>
                         <td style="padding: 0.75rem 1rem; max-width: 220px;">{{ r.message|truncatewords:15|default:"—" }}</td>
                     </tr>
@@ -97,18 +114,16 @@
                 <thead>
                     <tr style="background: #6b4d6e; color: #fff;">
                         <th style="text-align: left; padding: 0.75rem 1rem;">Name</th>
-                        <th style="text-align: left; padding: 0.75rem 1rem;">Email</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for g in not_responded %}
                     <tr style="border-bottom: 1px solid #e8e0e8; {% if forloop.counter0|divisibleby:2 %}background: #fafafa;{% endif %}">
                         <td style="padding: 0.75rem 1rem;"><strong>{{ g.full_name }}</strong></td>
-                        <td style="padding: 0.75rem 1rem;">{{ g.email|default:"—" }}</td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="2" style="padding: 2rem; text-align: center; color: #666;">Everyone has responded.</td>
+                        <td style="padding: 2rem; text-align: center; color: #666;">Everyone has responded.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -5,10 +5,13 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Count, Q
+from django.http import HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 import json
+import csv
+from django.utils import timezone
 
 from .forms import PhotoUploadForm, RSVPForm
 from .models import Guest, PhotoSubmission, RSVP
@@ -164,18 +167,29 @@ def rsvp_view(request):
                 party_size = 1
                 guest_names = [guest.full_name]
             
-            # Create default avatar configs (one per party member)
-            default_config = {
-                "skin": "porcelain",
-                "hair": "espresso",
-                "hairStyle": "short",
-                "outfit": "lavender",
-                "accent": "floral",
-                "accessories": "glasses",
-                "accessoriesColor": "black",
-                "signature": guest.full_name.strip() or "guest-avatar",
-            }
-            avatar_configs = [default_config.copy() for _ in range(party_size)]
+            def default_hair_style(index: int) -> str:
+                if index == 0:
+                    return "longButNotTooLong"  # Long 1
+                if index == 1:
+                    return "shortWaved"  # Short 1
+                # For people 3+ alternate Long 1 / Long 2
+                # index=2 -> Long 1, index=3 -> Long 2, index=4 -> Long 1, ...
+                return "longButNotTooLong" if (index % 2 == 0) else "curvy"
+
+            avatar_configs = []
+            for idx in range(party_size):
+                avatar_configs.append(
+                    {
+                        "skin": "porcelain",
+                        "hair": "espresso",
+                        "hairStyle": default_hair_style(idx),
+                        "outfit": "lavender",
+                        "accent": "floral",
+                        "accessories": "glasses",
+                        "accessoriesColor": "black",
+                        "signature": guest.full_name.strip() or "guest-avatar",
+                    }
+                )
             
             response, _ = RSVP.objects.update_or_create(
                 guest=guest,
@@ -191,6 +205,8 @@ def rsvp_view(request):
                     "livestream_requested": not attendance,
                 },
             )
+            if attendance:
+                request.session["current_rsvp_id"] = response.id
             if not verified:
                 messages.info(
                     request,
@@ -234,39 +250,55 @@ def rsvp_existing_view(request, rsvp_id):
                 except json.JSONDecodeError:
                     guest_names = []
             guest_names = [name for name in guest_names if name]
-            if guest_names and len(guest_names) != party_size:
+            if attendance and (not guest_names or len(guest_names) != party_size):
                 messages.error(request, "Please enter a name for each person in your party.")
                 return redirect("rsvp-existing", rsvp_id=rsvp.id)
+
+            if not attendance:
+                party_size = 1
+                guest_names = [rsvp.guest.full_name]
             
             # Update avatar configs if party size changed
             if party_size != rsvp.party_size:
-                default_config = {
-                    "skin": "porcelain",
-                    "hair": "espresso",
-                    "hairStyle": "short",
-                    "outfit": "lavender",
-                    "accent": "floral",
-                    "accessories": "glasses",
-                    "accessoriesColor": "black",
-                    "signature": rsvp.guest.full_name.strip() or "guest-avatar",
-                }
-                avatar_configs = [default_config.copy() for _ in range(party_size)]
+                def default_hair_style(index: int) -> str:
+                    if index == 0:
+                        return "longButNotTooLong"  # Long 1
+                    if index == 1:
+                        return "shortWaved"  # Short 1
+                    return "longButNotTooLong" if (index % 2 == 0) else "curvy"
+
+                avatar_configs = []
+                for idx in range(party_size):
+                    avatar_configs.append(
+                        {
+                            "skin": "porcelain",
+                            "hair": "espresso",
+                            "hairStyle": default_hair_style(idx),
+                            "outfit": "lavender",
+                            "accent": "floral",
+                            "accessories": "glasses",
+                            "accessoriesColor": "black",
+                            "signature": rsvp.guest.full_name.strip() or "guest-avatar",
+                        }
+                    )
                 rsvp.avatar_config = avatar_configs
             
             rsvp.attending = attendance
             rsvp.party_size = party_size
             rsvp.message = dietary_restrictions
-            if guest_names:
-                rsvp.guest_names = guest_names
+            rsvp.guest_names = guest_names
             rsvp.livestream_requested = not attendance
             rsvp.save()
             
             messages.success(request, "Your RSVP has been updated!")
+            if rsvp.attending:
+                request.session["current_rsvp_id"] = rsvp.id
             return redirect("home")
         
         elif action == "keep":
             # Keep same RSVP, redirect based on attendance
             if rsvp.attending:
+                request.session["current_rsvp_id"] = rsvp.id
                 return redirect("chapel")
             else:
                 return redirect("livestream")
@@ -277,11 +309,23 @@ def rsvp_existing_view(request, rsvp_id):
 def avatar_customization_view(request, rsvp_id):
     """Avatar customization page - builds avatars based on party size."""
     rsvp = get_object_or_404(RSVP, id=rsvp_id)
+
+    def guest_display_name(index: int) -> str:
+        raw = rsvp.guest_names if isinstance(rsvp.guest_names, list) else []
+        names = [str(x).strip() for x in raw if str(x).strip()]
+        if index < len(names):
+            return names[index]
+        if index == 0:
+            return (rsvp.guest.full_name or "").strip() or "Guest 1"
+        return f"Guest {index + 1}"
     
     if request.method == "POST":
         # Process avatar configurations from form
         avatar_configs = []
         for i in range(rsvp.party_size):
+            accessories = request.POST.get(f"avatar_{i}_accessories", "glasses")
+            if accessories not in ("none", "glasses"):
+                accessories = "glasses"
             config = {
                 "skin": request.POST.get(f"avatar_{i}_skin_tone", "light1"),
                 "hair": request.POST.get(f"avatar_{i}_hair_color", "dark1"),
@@ -289,7 +333,8 @@ def avatar_customization_view(request, rsvp_id):
                 "clothesType": request.POST.get(f"avatar_{i}_clothes_type", "collarAndSweater"),
                 "clothesColor": request.POST.get(f"avatar_{i}_clothes_color", "blue"),
                 "facialHair": request.POST.get(f"avatar_{i}_facial_hair", "none"),
-                "accessories": request.POST.get(f"avatar_{i}_accessories", "none"),
+                "accessories": accessories,
+                "accessoriesColor": "black",
                 "signature": request.POST.get(f"avatar_{i}_signature", f"{rsvp.guest.full_name.strip()}-{i+1}" or f"guest-avatar-{i+1}"),
             }
             avatar_configs.append(config)
@@ -298,11 +343,12 @@ def avatar_customization_view(request, rsvp_id):
         rsvp.save()
         
         if rsvp.attending:
+            request.session["current_rsvp_id"] = rsvp.id
             messages.success(
                 request,
                 "You're on the guest list! Head to the chapel to see your seat.",
             )
-            return redirect("chapel")
+            return redirect(reverse("chapel") + f"?rsvp_id={rsvp.id}")
         else:
             messages.success(
                 request,
@@ -329,6 +375,13 @@ def avatar_customization_view(request, rsvp_id):
             }
             rsvp.avatar_config = [default_config.copy() for _ in range(rsvp.party_size)]
     
+    def default_hair_style(index: int) -> str:
+        if index == 0:
+            return "longButNotTooLong"  # Long 1
+        if index == 1:
+            return "shortWaved"  # Short 1
+        return "longButNotTooLong" if (index % 2 == 0) else "curvy"
+
     # Ensure we have configs for all party members and set defaults for missing/empty values
     default_config = {
         "skin": "light1",  # Light skin tone
@@ -343,7 +396,8 @@ def avatar_customization_view(request, rsvp_id):
     
     for i in range(len(rsvp.avatar_config), rsvp.party_size):
         config = default_config.copy()
-        config["signature"] = f"{rsvp.guest.full_name.strip()}-{i+1}" or f"guest-avatar-{i+1}"
+        config["hairStyle"] = default_hair_style(i)
+        config["signature"] = f"{guest_display_name(i)}-{i+1}"
         rsvp.avatar_config.append(config)
     
     # Ensure all existing configs have the required fields with defaults
@@ -355,8 +409,16 @@ def avatar_customization_view(request, rsvp_id):
             config["skin"] = "light2"
         if "hair" not in config or not config["hair"]:
             config["hair"] = "dark1"
-        if "hairStyle" not in config or not config["hairStyle"]:
-            config["hairStyle"] = "shortFlat"
+        valid_hair_styles = {
+            "longButNotTooLong",
+            "curvy",
+            "straightAndStrand",
+            "shortWaved",
+            "shortFlat",
+            "sides",
+        }
+        if ("hairStyle" not in config) or (not config["hairStyle"]) or (config["hairStyle"] not in valid_hair_styles):
+            config["hairStyle"] = default_hair_style(i)
         if "clothesType" not in config or not config["clothesType"]:
             config["clothesType"] = "collarAndSweater"
         if "clothesColor" not in config or not config["clothesColor"]:
@@ -368,7 +430,8 @@ def avatar_customization_view(request, rsvp_id):
         if "accessoriesColor" not in config or not config["accessoriesColor"]:
             config["accessoriesColor"] = "black"
         if "signature" not in config or not config["signature"]:
-            config["signature"] = f"{rsvp.guest.full_name.strip()}-{i+1}" or f"guest-avatar-{i+1}"
+            config["signature"] = f"{guest_display_name(i)}-{i+1}"
+        config["displayName"] = guest_display_name(i)
         rsvp.avatar_config[i] = config
     
     return render(request, "celebration/avatar_customization.html", {
@@ -380,32 +443,69 @@ def avatar_customization_view(request, rsvp_id):
 
 def chapel_view(request):
     """Chapel page - displays interactive 3D seating chart."""
-    # Get only the 30 most recent RSVPs
-    attending_rsvps = (
-        RSVP.objects.filter(attending=True)
-        .select_related("guest")
-        .order_by("-created_at")[:30]
-    )
-    
-    # Build seating chart from RSVPs
-    seating = build_seating_chart(
-        attending_rsvps,
-        max_seats=30,
-        max_seats_per_rsvp=1,
-    )
-    
-    # Count attendees
-    attendee_count = len(seating)
-    
+    session_rsvp_id = request.session.get("current_rsvp_id")
+    if session_rsvp_id:
+        try:
+            session_rsvp = RSVP.objects.get(id=session_rsvp_id)
+            if session_rsvp.attending:
+                cfgs = (
+                    session_rsvp.avatar_config
+                    if isinstance(session_rsvp.avatar_config, list)
+                    else ([session_rsvp.avatar_config] if isinstance(session_rsvp.avatar_config, dict) else [])
+                )
+                first_cfg = cfgs[0] if cfgs and isinstance(cfgs[0], dict) else {}
+                if "clothesType" not in first_cfg:
+                    return redirect("avatar-customization", rsvp_id=session_rsvp.id)
+        except RSVP.DoesNotExist:
+            pass
+
     # Get current user's RSVP ID from URL parameter or use most recent
     current_rsvp_id = request.GET.get('rsvp_id')
+    if not current_rsvp_id and session_rsvp_id:
+        current_rsvp_id = str(session_rsvp_id)
+
+    current_rsvp = None
+    has_explicit_current = False
     if current_rsvp_id:
         try:
             current_rsvp = RSVP.objects.get(id=current_rsvp_id, attending=True)
+            has_explicit_current = True
         except RSVP.DoesNotExist:
-            current_rsvp = attending_rsvps.first() if attending_rsvps else None
-    else:
-        current_rsvp = attending_rsvps.first() if attending_rsvps else None
+            current_rsvp = None
+
+    # Build seating:
+    # - Always show the *current party* (all avatars) together.
+    # - Show everyone else capped to 1 avatar per RSVP to avoid clutter.
+    base_qs = (
+        RSVP.objects.filter(attending=True)
+        .select_related("guest")
+        .order_by("-created_at")
+    )
+
+    current_seats = []
+    if current_rsvp and has_explicit_current:
+        current_seats = build_seating_chart([current_rsvp])
+
+    # Cap chapel to 30 most recent *attending RSVPs* (not seats).
+    other_rsvp_limit = 30 - (1 if (current_rsvp and has_explicit_current) else 0)
+    other_rsvp_limit = max(0, other_rsvp_limit)
+    others_qs = base_qs
+    if current_rsvp and has_explicit_current:
+        others_qs = others_qs.exclude(id=current_rsvp.id)
+    other_seats = build_seating_chart(
+        others_qs[:other_rsvp_limit],
+        max_seats_per_rsvp=1,
+        start_seat_idx=len(current_seats),
+    )
+
+    seating = current_seats + other_seats
+
+    # Count attendees
+    attendee_count = len(seating)
+
+    # If no explicit current RSVP, use the most recent attending RSVP for context.
+    if not current_rsvp:
+        current_rsvp = base_qs.first()
     
     return render(
         request,
@@ -456,8 +556,8 @@ def details_view(request):
             "location": "Kings Mills",
             "address_lines": ["6000 Pennell Rd", "Media, PA"],
             "note": (
-                "We welcome you to enjoy an evening of dinner and dancing! We will be serving a buffet "
-                "with entree choices of roast beef, chicken marsala, and baked ziti. Chicken fingers and "
+                "Enjoy an evening of dinner and dancing! We will be serving a buffet with entree choices "
+                "of roast beef, chicken marsala, and baked ziti. Chicken fingers and "
                 "fries will be available for kids 9 and under."
             ),
         },
@@ -624,20 +724,40 @@ def dashboard_home_view(request):
     if not request.user.is_staff:
         messages.error(request, "You don't have permission to view the dashboard.")
         return redirect("home")
-    rsvps = RSVP.objects.select_related("guest").order_by("-created_at")
-    total = rsvps.count()
-    attending = rsvps.filter(attending=True)
+    all_rsvps = RSVP.objects.select_related("guest")
+    total = all_rsvps.count()
+    attending = all_rsvps.filter(attending=True)
     attending_count = attending.count()
-    livestream_count = rsvps.filter(livestream_requested=True).count()
+    not_attending_count = all_rsvps.filter(attending=False).count()
     total_guests = sum(r.party_size for r in attending)
-    meal_counts = (
-        rsvps.filter(attending=True)
-        .exclude(meal_preference="")
-        .values("meal_preference")
-        .annotate(count=Count("id"))
-    )
-    meal_labels = dict(RSVP.MEAL_CHOICES)
-    meal_breakdown = [{"label": meal_labels.get(m["meal_preference"], m["meal_preference"]), "count": m["count"]} for m in meal_counts]
+
+    status_filter = (request.GET.get("status") or "all").strip()
+    sort_key = (request.GET.get("sort") or "date").strip()
+    sort_dir = (request.GET.get("dir") or "desc").strip()
+
+    rsvps = all_rsvps
+    if status_filter == "attending":
+        rsvps = rsvps.filter(attending=True)
+    elif status_filter == "not_attending":
+        rsvps = rsvps.filter(attending=False)
+    else:
+        status_filter = "all"
+
+    sort_map = {
+        "guest": "guest__full_name",
+        "status": "attending",
+        "date": "created_at",
+    }
+    order_field = sort_map.get(sort_key, "created_at")
+    if sort_key not in sort_map:
+        sort_key = "date"
+
+    if sort_dir not in {"asc", "desc"}:
+        sort_dir = "desc"
+
+    prefix = "" if sort_dir == "asc" else "-"
+    rsvps = rsvps.order_by(f"{prefix}{order_field}", "-created_at")
+
     # Guests who are invited but have no RSVP yet
     responded_guest_ids = RSVP.objects.values_list("guest_id", flat=True)
     not_responded = (
@@ -650,11 +770,82 @@ def dashboard_home_view(request):
         "rsvps": rsvps,
         "total_rsvps": total,
         "attending_count": attending_count,
-        "livestream_count": livestream_count,
+        "not_attending_count": not_attending_count,
         "total_guests": total_guests,
-        "meal_breakdown": meal_breakdown,
         "not_responded": not_responded,
         "not_responded_count": not_responded_count,
+        "status_filter": status_filter,
+        "sort": sort_key,
+        "dir": sort_dir,
     }
     return render(request, "celebration/dashboard.html", context)
+
+
+@login_required(login_url="/dashboard/login/")
+def dashboard_export_rsvps_csv_view(request):
+    if not request.user.is_staff:
+        return redirect("home")
+
+    status_filter = (request.GET.get("status") or "all").strip()
+    sort_key = (request.GET.get("sort") or "date").strip()
+    sort_dir = (request.GET.get("dir") or "desc").strip()
+
+    rsvps = RSVP.objects.select_related("guest")
+    if status_filter == "attending":
+        rsvps = rsvps.filter(attending=True)
+    elif status_filter == "not_attending":
+        rsvps = rsvps.filter(attending=False)
+    else:
+        status_filter = "all"
+
+    sort_map = {
+        "guest": "guest__full_name",
+        "status": "attending",
+        "date": "created_at",
+    }
+    order_field = sort_map.get(sort_key, "created_at")
+    if sort_key not in sort_map:
+        sort_key = "date"
+
+    if sort_dir not in {"asc", "desc"}:
+        sort_dir = "desc"
+    prefix = "" if sort_dir == "asc" else "-"
+    rsvps = rsvps.order_by(f"{prefix}{order_field}", "-created_at")
+
+    def safe_cell(value: str) -> str:
+        v = (value or "").strip()
+        if v and v[0] in ("=", "+", "-", "@"):
+            return "'" + v
+        return v
+
+    filename = f"rsvps-{timezone.localdate().isoformat()}.csv"
+    resp = HttpResponse(content_type="text/csv; charset=utf-8")
+    resp["Content-Disposition"] = f'attachment; filename="{filename}"'
+
+    writer = csv.writer(resp)
+    writer.writerow(
+        [
+            "Invitation",
+            "Who's Coming",
+            "Status",
+            "Party Size",
+            "Dietary Restrictions / Allergies",
+            "Submitted At",
+        ]
+    )
+    for r in rsvps:
+        who = ", ".join(r.guest_names or []) if r.guest_names else ""
+        status = "Attending" if r.attending else "Not Attending"
+        writer.writerow(
+            [
+                safe_cell(r.guest.full_name),
+                safe_cell(who),
+                status,
+                r.party_size,
+                safe_cell(r.message),
+                timezone.localtime(r.created_at).strftime("%Y-%m-%d %H:%M"),
+            ]
+        )
+
+    return resp
 

@@ -187,12 +187,12 @@ def avatar_url(avatar_config: Dict[str, str], fallback_seed: str) -> str:
     
     # Facial hair: use facialHair field or default to none
     facial_hair = FACIAL_HAIR_OPTIONS.get(
-        avatar_config.get("facialHair"), "none"
+        avatar_config.get("facialHair"), FACIAL_HAIR_OPTIONS["none"]
     )
     
     # Accessories: use accessories field or default to blank
     accessories = ACCESSORIES_OPTIONS.get(
-        avatar_config.get("accessories"), "none"
+        avatar_config.get("accessories"), ACCESSORIES_OPTIONS["none"]
     )
     
     params = {
@@ -234,11 +234,12 @@ def build_seating_chart(
     seats_per_row: int = None,
     max_seats: int | None = None,
     max_seats_per_rsvp: int | None = None,
+    start_seat_idx: int = 0,
 ) -> List[dict]:
     row_names = ["A", "B", "C", "D", "E", "F"]
     seating_plan: List[dict] = []
 
-    seat_idx = 0
+    seat_idx = start_seat_idx
     for response in responses:
         # Get avatar configs - handle both list and dict formats for backward compatibility
         if isinstance(response.avatar_config, list):
@@ -272,11 +273,16 @@ def build_seating_chart(
             seat_number = seat_index + 1
             position = compute_seat_position(row_index, seat_index)
             
-            # Build name - if multiple people, add a suffix
-            if len(avatar_configs) > 1:
-                name = f"{response.guest.full_name} ({avatar_idx + 1})"
+            # Build hover/display name (prefer typed-in guest names when available)
+            raw_names = response.guest_names if isinstance(response.guest_names, list) else []
+            guest_names = [str(x).strip() for x in raw_names if str(x).strip()]
+            if avatar_idx < len(guest_names):
+                name = guest_names[avatar_idx]
             else:
-                name = response.guest.full_name
+                if len(avatar_configs) > 1:
+                    name = f"{response.guest.full_name} ({avatar_idx + 1})"
+                else:
+                    name = response.guest.full_name
             
             # Build avatar URL from config
             avatar_url_str = avatar_url(avatar_config, name)

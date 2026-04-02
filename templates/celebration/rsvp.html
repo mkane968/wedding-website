@@ -4,6 +4,7 @@
 {% block content %}
 <section class="rsvp-page">
     <div style="text-align: center; padding: 4rem 2rem; max-width: 900px; margin: 0 auto;">
+        <img src="{% static 'rose-border-2.png' %}" alt="Floral border" style="max-width: 800px; width: 100%; height: auto; display: block; margin: 0 auto 2rem;" />
         <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 3rem; font-weight: 400; margin: 0 0 0.75rem 0; color: #2b2b2b; letter-spacing: 0.02em;">Find Your Invitation</h1>
         <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.25rem; color: #6b6b6b; margin: 0 0 2rem 0; line-height: 1.6;">
             Search for the name(s) on the invitation you received to begin your RSVP.
@@ -36,9 +37,17 @@
                 <div id="existing-rsvp-panel" style="display: none; text-align: left; background: #f7f1ee; border: 1px solid rgba(76, 42, 79, 0.18); border-radius: 10px; padding: 1.25rem 1.25rem;">
                     <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.7rem; font-weight: 500; margin: 0 0 0.5rem 0; color: #2b2b2b;">We Already Have an RSVP for This Invitation</h2>
                     <p id="existing-rsvp-summary" style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin: 0 0 1rem 0; line-height: 1.6;"></p>
-                    <a id="existing-rsvp-change-link" href="#" style="display: inline-block; padding: 0.85rem 1.5rem; background: #4c2a4f; color: white; border-radius: 8px; text-decoration: none; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem;">
-                        Change My RSVP
-                    </a>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                        <a id="existing-rsvp-change-link" href="#" style="display: inline-block; padding: 0.85rem 1.5rem; background: #4c2a4f; color: white; border-radius: 8px; text-decoration: none; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem;">
+                            Change My RSVP
+                        </a>
+                        <a id="existing-rsvp-chapel-link" href="#" style="display: none; padding: 0.85rem 1.5rem; background: white; color: #4c2a4f; border: 2px solid #4c2a4f; border-radius: 8px; text-decoration: none; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem;">
+                            Visit Virtual Chapel
+                        </a>
+                        <a id="existing-rsvp-livestream-link" href="{% url 'livestream' %}" style="display: none; padding: 0.85rem 1.5rem; background: white; color: #4c2a4f; border: 2px solid #4c2a4f; border-radius: 8px; text-decoration: none; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem;">
+                            Watch the Livestream
+                        </a>
+                    </div>
                     <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; color: #6b6b6b; margin: 0.75rem 0 0 0; line-height: 1.6;">
                         If you update your RSVP, please also email us at <a href="mailto:mksmwedding2026@gmail.com" style="color: #4c2a4f; text-decoration: underline;">mksmwedding2026@gmail.com</a> so we can double-check we have the correct response.
                     </p>
@@ -65,34 +74,39 @@
                 <div id="step-attending-details" style="display: none;">
                     <div style="text-align: left;">
                         <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.8rem; font-weight: 500; margin: 0 0 0.75rem 0; color: #2b2b2b;">Party Details</h2>
-                        <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #6b6b6b; margin: 0 0 1rem 0; line-height: 1.6;">
-                            Tell us who’s coming and any dietary restrictions.
-                        </p>
                     </div>
 
-                    {{ rsvp_form.party_size.label_tag }}
+                    <h3 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.35rem; font-weight: 600; margin: 0 0 0.5rem 0; color: #2b2b2b;">
+                        Party Size
+                    </h3>
+                    {% if rsvp_form.party_size.help_text %}
+                        <p style="font-size: 0.95rem; color: #6b6b6b; margin: 0.25rem 0 0.75rem 0;">{{ rsvp_form.party_size.help_text }}</p>
+                    {% endif %}
                     {{ rsvp_form.party_size }}
                     {{ rsvp_form.party_size.errors }}
-                    {% if rsvp_form.party_size.help_text %}
-                        <p style="font-size: 0.9rem; color: #6b6b6b; margin: 0.5rem 0 0 0;">{{ rsvp_form.party_size.help_text }}</p>
-                    {% endif %}
 
                     <div style="margin-top: 1.25rem;">
-                        <label for="guest_name_1" style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Who's Coming?</label>
+                        <h3 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.35rem; font-weight: 600; margin: 0 0 0.5rem 0; color: #2b2b2b;">
+                            Who's Coming?
+                        </h3>
+                        <p style="font-size: 0.95rem; color: #6b6b6b; margin: 0.25rem 0 0.75rem 0;">
+                            Please enter each guest's name, as you would like it to appear on our seating chart.
+                        </p>
                         <div id="guest-names-fields" style="display: grid; gap: 0.75rem;"></div>
                         <div id="guest-names-error" style="display: none; color: #d32f2f; font-size: 0.9rem; margin-top: 0.5rem;">
                             Please enter a name for each person in your party.
                         </div>
                         {{ rsvp_form.guest_names_json }}
-                        <p style="font-size: 0.9rem; color: #6b6b6b; margin: 0.5rem 0 0 0;">
-                            Please enter each guest's name, as you would like it to appear on our seating chart.
-                        </p>
+                        {{ rsvp_form.guest_names_json.errors }}
                     </div>
 
                     <div style="margin-top: 1.25rem;">
-                        <label for="id_dietary_restrictions" style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">
+                        <h3 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.35rem; font-weight: 600; margin: 0 0 0.5rem 0; color: #2b2b2b;">
+                            Allergies and Dietary Restrictions
+                        </h3>
+                        <p style="font-size: 0.95rem; color: #6b6b6b; margin: 0.25rem 0 0.75rem 0;">
                             Please let us know of any allergies or dietary restrictions. Buffet entrées include roast beef, chicken marsala, and baked ziti. Kids chicken fingers &amp; fries (9 and under).
-                        </label>
+                        </p>
                         {{ rsvp_form.dietary_restrictions }}
                         {{ rsvp_form.dietary_restrictions.errors }}
                     </div>
@@ -126,6 +140,8 @@
     const existingRsvpPanel = document.getElementById('existing-rsvp-panel');
     const existingRsvpSummary = document.getElementById('existing-rsvp-summary');
     const existingRsvpChangeLink = document.getElementById('existing-rsvp-change-link');
+    const existingRsvpChapelLink = document.getElementById('existing-rsvp-chapel-link');
+    const existingRsvpLivestreamLink = document.getElementById('existing-rsvp-livestream-link');
     const partySizeInput = document.getElementById('id_party_size');
     const guestNamesFields = document.getElementById('guest-names-fields');
     const guestNamesJsonField = document.getElementById('id_guest_names_json');
@@ -187,6 +203,7 @@
             input.name = `guest_name_${i}`;
             input.id = `guest_name_${i}`;
             input.placeholder = 'Guest Name';
+            input.required = true;
             input.value = existing[i - 1] || '';
             guestNamesFields.appendChild(input);
         }
@@ -346,6 +363,8 @@
             .then((data) => {
                 if (!data || !data.exists) {
                     hasExistingRsvp = false;
+                    if (existingRsvpChapelLink) existingRsvpChapelLink.style.display = 'none';
+                    if (existingRsvpLivestreamLink) existingRsvpLivestreamLink.style.display = 'none';
                     syncSteps();
                     renderGuestNameFields();
                     return;
@@ -359,10 +378,23 @@
                 if (existingRsvpChangeLink && data.rsvp_id) {
                     existingRsvpChangeLink.href = `{% url 'rsvp-existing' 0 %}`.replace('/0/', `/${data.rsvp_id}/`);
                 }
+                if (existingRsvpChapelLink && data.rsvp_id && data.attending) {
+                    existingRsvpChapelLink.href = `{% url 'chapel' %}` + `?rsvp_id=${data.rsvp_id}`;
+                    existingRsvpChapelLink.style.display = '';
+                } else if (existingRsvpChapelLink) {
+                    existingRsvpChapelLink.style.display = 'none';
+                }
+                if (existingRsvpLivestreamLink && !data.attending) {
+                    existingRsvpLivestreamLink.style.display = '';
+                } else if (existingRsvpLivestreamLink) {
+                    existingRsvpLivestreamLink.style.display = 'none';
+                }
                 syncSteps();
             })
             .catch(() => {
                 hasExistingRsvp = false;
+                if (existingRsvpChapelLink) existingRsvpChapelLink.style.display = 'none';
+                if (existingRsvpLivestreamLink) existingRsvpLivestreamLink.style.display = 'none';
                 syncSteps();
                 renderGuestNameFields();
             });

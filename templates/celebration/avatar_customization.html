@@ -4,8 +4,9 @@
 {% block content %}
 <section class="avatar-customization-page">
     <div style="text-align: center; padding: 4rem 2rem; max-width: 1200px; margin: 0 auto;">
-        <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 3rem; font-weight: 400; margin: 0 0 1rem 0; color: #2b2b2b; letter-spacing: 0.02em;">Create Your Avatars</h1>
-        <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; color: #6b6b6b; margin: 0 0 3rem 0;">Customize {{ party_size }} avatar{{ party_size|pluralize }} for your party</p>
+        <img src="{% static 'rose-border-2.png' %}" alt="Floral border" style="max-width: 800px; width: 100%; height: auto; display: block; margin: 0 auto 2rem;" />
+        <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 3rem; font-weight: 400; margin: 0 0 1rem 0; color: #2b2b2b; letter-spacing: 0.02em;">Prepare to Enter the Chapel</h1>
+        <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; color: #6b6b6b; margin: 0 0 3rem 0;">Create custom avatars for each member of your party</p>
         
         <form method="post" novalidate style="display: grid; gap: 3rem;">
             {% csrf_token %}
@@ -13,10 +14,10 @@
             {% for config in avatar_configs %}
                 {% with avatar_index=forloop.counter0 %}
                 <div class="avatar-builder" data-avatar-index="{{ avatar_index }}" style="border: 1px solid #e0e0e0; border-radius: 12px; padding: 2rem; background: #fafafa;">
-                    <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 2rem; font-weight: 400; margin: 0 0 2rem 0; color: #2b2b2b; text-align: center;">Person {{ forloop.counter }}</h2>
+                    <h2 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 2rem; font-weight: 400; margin: 0 0 2rem 0; color: #2b2b2b; text-align: center;">Person {{ forloop.counter }}{% if config.displayName %}: {{ config.displayName }}{% endif %}</h2>
                     
                     <!-- Hidden field for signature -->
-                    <input type="hidden" name="avatar_{{ avatar_index }}_signature" id="id_avatar_{{ avatar_index }}_signature" value="{{ config.signature|default:rsvp.guest.full_name }}-{{ forloop.counter }}">
+                    <input type="hidden" name="avatar_{{ avatar_index }}_signature" id="id_avatar_{{ avatar_index }}_signature" value="{{ config.signature|default:rsvp.guest.full_name }}">
                     
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
                         <div style="display: grid; gap: 1.5rem;">
@@ -79,8 +80,8 @@
                             <div>
                                 <label style="display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; color: #2b2b2b; margin-bottom: 0.5rem;">Accessories</label>
                                 <select name="avatar_{{ avatar_index }}_accessories" id="id_avatar_{{ avatar_index }}_accessories" class="custom-select" style="width: 100%; padding: 0.75rem; border: 2px solid #d0d0d0; border-radius: 6px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; background: white; cursor: pointer;">
-                                    <option value="none" {% if config.accessories == 'none' or not config.accessories %}selected{% endif %}>None</option>
-                                    <option value="glasses" {% if config.accessories == 'glasses' %}selected{% endif %}>Glasses</option>
+                                    <option value="none" {% if config.accessories == 'none' %}selected{% endif %}>No Glasses</option>
+                                    <option value="glasses" {% if config.accessories == 'glasses' or not config.accessories %}selected{% endif %}>Glasses</option>
                                 </select>
                             </div>
                         </div>
@@ -130,9 +131,11 @@
             {% endfor %}
             
             <div style="text-align: center; padding-top: 2rem;">
-                <button type="submit" style="padding: 1rem 3rem; background: #4c2a4f; color: white; border: none; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; cursor: pointer;">Complete RSVP</button>
+                <button type="submit" style="padding: 1rem 3rem; background: #4c2a4f; color: white; border: none; border-radius: 4px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; cursor: pointer;">Enter the Chapel</button>
             </div>
         </form>
+
+        <img src="{% static 'rose-border-2.png' %}" alt="Floral border" style="max-width: 800px; width: 100%; height: auto; display: block; margin: 3rem auto 0; transform: rotate(180deg);" />
     </div>
 </section>
 
@@ -297,6 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             params.append('accessories', accessoriesValue);
             params.append('accessoriesProbability', '100');  // Ensure accessories appear when selected
+            params.append('accessoriesColor', '262e33'); // Black
         }
         
         // Add cache-busting parameter to prevent old cached images
