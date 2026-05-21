@@ -140,6 +140,12 @@ def compute_seat_position(row_index: int, seat_index: int) -> Dict[str, float]:
     return {"x": x, "z": z}
 
 
+def guest_invitation_email(full_name: str) -> str:
+    """Generate a placeholder email for guests without an address on file."""
+    slug = slugify(full_name.strip()) or f"guest-{Guest.objects.count() + 1}"
+    return f"{slug}@invitation.local"
+
+
 def find_or_create_guest(full_name: str, email: str | None) -> Tuple[Guest, bool]:
     normalized_name = full_name.strip()
     

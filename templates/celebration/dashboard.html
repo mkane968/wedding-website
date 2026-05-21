@@ -3,7 +3,13 @@
 {% block title %}RSVPs{% endblock %}
 
 {% block content %}
-<h2 style="font-size: 1.75rem; margin: 0 0 1.5rem 0; color: #2b2b2b;">Overview</h2>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+    <h2 style="font-size: 1.75rem; margin: 0; color: #2b2b2b;">Overview</h2>
+    <a href="{% url 'dashboard-add-guest' %}"
+       style="padding: 0.55rem 1rem; border-radius: 8px; background: #4c2a4f; color: #fff; text-decoration: none; font-weight: 600; white-space: nowrap;">
+        + Add Guest
+    </a>
+</div>
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 2.5rem;">
     <div style="background: #4c2a4f; color: #fff; padding: 1.25rem; border-radius: 10px; text-align: center;">
@@ -108,7 +114,13 @@
         <span style="font-size: 1rem;">▶</span> Not yet responded <span style="font-weight: 400; color: #666; font-size: 1rem;">({{ not_responded_count }})</span>
     </summary>
     <div style="padding: 0 1rem 1rem;">
-        <p style="font-size: 0.95rem; color: #666; margin: 0 0 0.75rem 0;">Invited guests with no RSVP on file.</p>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+            <p style="font-size: 0.95rem; color: #666; margin: 0;">Invited guests with no RSVP on file.</p>
+            <a href="{% url 'dashboard-add-guest' %}"
+               style="padding: 0.45rem 0.85rem; border-radius: 8px; border: 1px solid rgba(76, 42, 79, 0.25); background: #fff; color: #4c2a4f; text-decoration: none; font-weight: 600; white-space: nowrap;">
+                Add Guest
+            </a>
+        </div>
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse; font-size: 1rem;">
                 <thead>

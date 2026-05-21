@@ -13,7 +13,7 @@ import json
 import csv
 from django.utils import timezone
 
-from .forms import PhotoUploadForm, RSVPForm
+from .forms import GuestForm, PhotoUploadForm, RSVPForm
 from .models import Guest, PhotoSubmission, RSVP
 from .utils import build_seating_chart, find_or_create_guest
 
@@ -650,9 +650,11 @@ def guest_search_view(request):
     # Also search in household_name for better matching
     from django.db.models import Q
     
-    guests = Guest.objects.filter(
-        Q(full_name__icontains=query) | Q(household_name__icontains=query)
-    ).order_by("full_name")[:10]  # Limit to 10 results
+    guests = (
+        Guest.objects.filter(invited=True)
+        .filter(Q(full_name__icontains=query) | Q(household_name__icontains=query))
+        .order_by("full_name")[:10]
+    )
     
     results = [
         {
@@ -779,6 +781,28 @@ def dashboard_home_view(request):
         "dir": sort_dir,
     }
     return render(request, "celebration/dashboard.html", context)
+
+
+@login_required(login_url="/dashboard/login/")
+def dashboard_add_guest_view(request):
+    """Add a guest to the invitation list so they can RSVP."""
+    if not request.user.is_staff:
+        messages.error(request, "You don't have permission to view the dashboard.")
+        return redirect("home")
+
+    if request.method == "POST":
+        form = GuestForm(request.POST)
+        if form.is_valid():
+            guest = form.save()
+            messages.success(
+                request,
+                f"Added {guest.full_name} to the guest list. They can now RSVP on the site.",
+            )
+            return redirect("dashboard")
+    else:
+        form = GuestForm()
+
+    return render(request, "celebration/dashboard_guest_form.html", {"form": form})
 
 
 @login_required(login_url="/dashboard/login/")
