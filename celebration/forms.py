@@ -126,17 +126,11 @@ class RSVPForm(forms.Form):
 class GuestForm(forms.ModelForm):
     class Meta:
         model = Guest
-        fields = ["full_name", "email", "household_name", "side", "relationship", "notes"]
+        fields = ["full_name"]
         widgets = {
             "full_name": forms.TextInput(
                 attrs={"placeholder": "Jane Smith", "autofocus": True},
             ),
-            "email": forms.EmailInput(attrs={"placeholder": "hello@example.com (optional)"}),
-            "household_name": forms.TextInput(
-                attrs={"placeholder": "The Smith Family (optional)"},
-            ),
-            "relationship": forms.TextInput(attrs={"placeholder": "College friend (optional)"}),
-            "notes": forms.Textarea(attrs={"rows": 3, "placeholder": "Internal notes (optional)"}),
         }
 
     def clean_full_name(self):
@@ -155,10 +149,7 @@ class GuestForm(forms.ModelForm):
         guest.full_name = guest.full_name.strip()
         guest.invited = True
         guest.verified = True
-        if not (guest.email or "").strip():
-            guest.email = guest_invitation_email(guest.full_name)
-        else:
-            guest.email = guest.email.strip().lower()
+        guest.email = guest_invitation_email(guest.full_name)
         if commit:
             guest.save()
         return guest

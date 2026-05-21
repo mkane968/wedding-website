@@ -18,7 +18,7 @@
             </ul>
         {% endif %}
 
-        <div style="margin-bottom: 1rem;">
+        <div style="margin-bottom: 1.5rem;">
             <label for="{{ form.full_name.id_for_label }}" style="display: block; margin-bottom: 0.35rem; color: #444;">
                 Full name <span style="color: #c00;">*</span>
             </label>
@@ -29,56 +29,6 @@
                 </ul>
             {% endif %}
             <p style="font-size: 0.9rem; color: #777; margin: 0.35rem 0 0 0;">Use the name as it should appear in RSVP search.</p>
-        </div>
-
-        <div style="margin-bottom: 1rem;">
-            <label for="{{ form.email.id_for_label }}" style="display: block; margin-bottom: 0.35rem; color: #444;">Email</label>
-            {{ form.email }}
-            {% if form.email.errors %}
-                <ul style="color: #c00; margin: 0.35rem 0 0 0; padding-left: 1.25rem;">
-                    {% for err in form.email.errors %}<li>{{ err }}</li>{% endfor %}
-                </ul>
-            {% endif %}
-        </div>
-
-        <div style="margin-bottom: 1rem;">
-            <label for="{{ form.household_name.id_for_label }}" style="display: block; margin-bottom: 0.35rem; color: #444;">Household</label>
-            {{ form.household_name }}
-            {% if form.household_name.errors %}
-                <ul style="color: #c00; margin: 0.35rem 0 0 0; padding-left: 1.25rem;">
-                    {% for err in form.household_name.errors %}<li>{{ err }}</li>{% endfor %}
-                </ul>
-            {% endif %}
-        </div>
-
-        <div style="margin-bottom: 1rem;">
-            <label for="{{ form.side.id_for_label }}" style="display: block; margin-bottom: 0.35rem; color: #444;">Side</label>
-            {{ form.side }}
-            {% if form.side.errors %}
-                <ul style="color: #c00; margin: 0.35rem 0 0 0; padding-left: 1.25rem;">
-                    {% for err in form.side.errors %}<li>{{ err }}</li>{% endfor %}
-                </ul>
-            {% endif %}
-        </div>
-
-        <div style="margin-bottom: 1rem;">
-            <label for="{{ form.relationship.id_for_label }}" style="display: block; margin-bottom: 0.35rem; color: #444;">Relationship</label>
-            {{ form.relationship }}
-            {% if form.relationship.errors %}
-                <ul style="color: #c00; margin: 0.35rem 0 0 0; padding-left: 1.25rem;">
-                    {% for err in form.relationship.errors %}<li>{{ err }}</li>{% endfor %}
-                </ul>
-            {% endif %}
-        </div>
-
-        <div style="margin-bottom: 1.5rem;">
-            <label for="{{ form.notes.id_for_label }}" style="display: block; margin-bottom: 0.35rem; color: #444;">Notes</label>
-            {{ form.notes }}
-            {% if form.notes.errors %}
-                <ul style="color: #c00; margin: 0.35rem 0 0 0; padding-left: 1.25rem;">
-                    {% for err in form.notes.errors %}<li>{{ err }}</li>{% endfor %}
-                </ul>
-            {% endif %}
         </div>
 
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
@@ -95,26 +45,13 @@
 </div>
 
 <style>
-    #{{ form.full_name.id_for_label }},
-    #{{ form.email.id_for_label }},
-    #{{ form.household_name.id_for_label }},
-    #{{ form.relationship.id_for_label }},
-    #{{ form.side.id_for_label }} {
+    #{{ form.full_name.id_for_label }} {
         width: 100%;
         padding: 0.6rem 0.75rem;
         font-size: 1rem;
         border: 1px solid #ccc;
         border-radius: 6px;
         box-sizing: border-box;
-    }
-    #{{ form.notes.id_for_label }} {
-        width: 100%;
-        padding: 0.6rem 0.75rem;
-        font-size: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        box-sizing: border-box;
-        font-family: inherit;
     }
 </style>
 {% endblock %}
