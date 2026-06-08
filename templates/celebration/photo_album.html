@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="photo-album-page">
+    <header>
+        <p class="eyebrow">Photo Album</p>
+        <h1>Megan &amp; Stephen's Wedding</h1>
+        <p>
+            Browse our shared Google Photos album — and add your own shots from the day!
+        </p>
+    </header>
+
+    <div class="photo-album-cta">
+        <a href="https://photos.app.goo.gl/e1L9vaADhkwAoHst7" target="_blank" rel="noopener noreferrer" class="btn-primary">
+            Open Album &amp; Add Photos
+        </a>
+    </div>
+
+    <div class="photo-album-steps">
+        <article>
+            <div class="step-number">1</div>
+            <h3>Open the Album</h3>
+            <p>
+                Tap the button above to open the shared album in Google Photos. No account is required to view — sign in only if you'd like to contribute.
+            </p>
+        </article>
+        <article>
+            <div class="step-number">2</div>
+            <h3>Add Your Photos</h3>
+            <p>
+                Hit the <strong>+</strong> button in the top right corner and select photos from your camera roll to upload directly to the album.
+            </p>
+        </article>
+        <article>
+            <div class="step-number">3</div>
+            <h3>Share the Link</h3>
+            <p>
+                Send the album link to family and friends so everyone can relive the memories together.
+            </p>
+        </article>
+    </div>
+</section>
+{% endblock %}

@@ -23,4 +23,5 @@ urlpatterns = [
     path("wedding-party/", views.wedding_party_view, name="wedding-party"),
     path("photos/upload/", views.photo_upload_view, name="photo-upload"),
     path("photos/gallery/", views.gallery_view, name="photo-gallery"),
+    path("photos/album/", views.photo_album_view, name="photo-album"),
 ]

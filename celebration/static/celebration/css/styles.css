@@ -332,7 +332,8 @@ form li {
 
 .photo-upload-page,
 .gallery-page,
-.livestream-hero {
+.livestream-hero,
+.photo-album-page {
     padding: 3rem 0;
 }
 
@@ -368,4 +369,68 @@ form li {
     .chapel-seat-list {
         columns: 1;
     }
+}
+
+/* Photo Album page */
+.photo-album-page header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.photo-album-cta {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 3rem;
+}
+
+.btn-primary {
+    display: inline-block;
+    background: #4c2a4f;
+    color: #fff;
+    text-decoration: none;
+    padding: 0.9rem 2.25rem;
+    border-radius: 999px;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.btn-primary:hover {
+    background: #3a1f3d;
+    transform: translateY(-1px);
+    color: #fff;
+}
+
+.photo-album-steps {
+    display: grid;
+    gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .photo-album-steps {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.photo-album-steps article {
+    background: #fff;
+    border-radius: 24px;
+    padding: 1.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.step-number {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: rgba(76, 42, 79, 0.1);
+    color: #4c2a4f;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
 }

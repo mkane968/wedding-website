@@ -627,6 +627,11 @@ def gallery_view(request):
     )
 
 
+def photo_album_view(request):
+    """Shared Google Photos album page."""
+    return render(request, "celebration/photo_album.html")
+
+
 def photo_upload_view(request):
     form = PhotoUploadForm()
     if request.method == "POST":
