@@ -519,11 +519,20 @@ def chapel_view(request):
 
 
 def livestream_view(request):
-    """Livestream page - coming soon placeholder."""
+    """Livestream page with embedded YouTube live stream."""
+    embed_code = (
+        '<iframe width="100%" height="100%"'
+        ' src="https://www.youtube.com/embed/SbupqdX_IQw"'
+        ' title="Wedding Livestream"'
+        ' frameborder="0"'
+        ' allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"'
+        ' referrerpolicy="strict-origin-when-cross-origin"'
+        ' allowfullscreen></iframe>'
+    )
     return render(
         request,
-        "celebration/coming_soon.html",
-        {"page_title": "Livestream"},
+        "celebration/livestream.html",
+        {"embed_code": embed_code},
     )
 
 
