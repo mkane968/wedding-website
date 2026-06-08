@@ -334,7 +334,9 @@ form li {
 .gallery-page,
 .livestream-hero,
 .photo-album-page {
-    padding: 3rem 0;
+    padding: 3rem 5vw;
+    max-width: 960px;
+    margin: 0 auto;
 }
 
 .photos-section form {
